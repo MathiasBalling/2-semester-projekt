@@ -4,7 +4,6 @@ CC:= clang++
 
 CFLAGS = -std=c++17 -Wno-deprecated-enum-enum-conversion -O2
 CFLAGS +=`wx-config --cxxflags` 
-# CFLAGS += `pkg-config --cflags opencv4` 
 LDFLAGS = `wx-config --libs` 
 
 
