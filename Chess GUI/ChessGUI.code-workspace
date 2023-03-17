@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": "Source"
+		},
+		{
+			"path": "Header"
+		},
+		{
+			"path": "images"
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"unordered_map": "cpp",
+			"iosfwd": "cpp"
+		}
+	}
+}
