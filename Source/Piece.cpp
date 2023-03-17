@@ -80,8 +80,10 @@ void Piece::move(int targetX, int targetY, Board *board)
 		if (board->getPieceAt(targetX, targetY)->getId().find("King") != std::string::npos)
 			board->setGameFinished(true);
 	}
-	std::cout << "x: " << cellX << " - y: " << cellY << std::endl;
-	std::cout << "x: " << targetX << " - y: " << targetY << std::endl;
+	wxLogMessage("From: x=%d y=%d\tTo: x=%d y=%d", cellX, cellY, targetX, targetY);
+	board->ur5.setX(cellX);
+	board->ur5.setY(cellY);
+
 	board->getCellAt(cellX, cellY)->setPiece(nullptr);
 	cellX = targetX;
 	cellY = targetY;
