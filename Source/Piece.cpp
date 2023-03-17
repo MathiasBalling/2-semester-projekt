@@ -80,6 +80,8 @@ void Piece::move(int targetX, int targetY, Board *board)
 		if (board->getPieceAt(targetX, targetY)->getId().find("King") != std::string::npos)
 			board->setGameFinished(true);
 	}
+	std::cout << "x: " << cellX << " - y: " << cellY << std::endl;
+	std::cout << "x: " << targetX << " - y: " << targetY << std::endl;
 	board->getCellAt(cellX, cellY)->setPiece(nullptr);
 	cellX = targetX;
 	cellY = targetY;
@@ -120,7 +122,6 @@ void Pawn::illuminatePaths(Board *board)
 	if ((cellY == 6 && color == "white") || (cellY == 1 && color == "black"))
 		board->getCellAt(cellX, cellY - 2 * sign)->turnOn();
 }
-
 Rook::Rook(int cellX, int cellY, wxBitmap image, std::string id)
 	: Piece(cellX, cellY, image, id)
 {

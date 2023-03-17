@@ -3,6 +3,7 @@
 #include "../Header/Piece.fwd.h"
 #include <wx/wx.h>
 #include <unordered_map>
+#include "../Header/UR5.h"
 #include "../Header/Cell.h"
 
 class Board
@@ -24,12 +25,13 @@ public:
 	void eraseAllIllumination();
 	void setGameFinished(bool gameFinished);
 	bool isGameFinished();
+	UR5 ur5;
 
 private:
 	std::unordered_map<std::string, Piece *> pieces;
 	std::vector<std::vector<Cell *>> cells;
 	Piece *selectedPiece;
-	bool enemyIsAI = true;
+	bool enemyIsAI = false;
 	bool gameFinished;
 	void initPieces();
 	void initCells();

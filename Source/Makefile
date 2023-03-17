@@ -4,9 +4,9 @@ CC:= clang++
 
 CFLAGS = -std=c++17 -Wno-deprecated-enum-enum-conversion -O2
 CFLAGS +=`wx-config --cxxflags` 
-# CFLAGS += `pkg-config --cflags opencv4` 
+CFLAGS += `pkg-config --cflags libmodbus` 
 LDFLAGS = `wx-config --libs` 
-
+LDFLAGS += `pkg-config --libs libmodbus`
 
 SOURCES := $(wildcard *.cpp)
 OBJECTS := $(patsubst %.cpp,%.o,$(SOURCES))
