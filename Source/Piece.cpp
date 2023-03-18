@@ -1,6 +1,12 @@
 #include "../Header/Pieces.h"
 #include "../Header/Board.h"
+#include <chrono>
+#include <thread>
 #include <wx/bitmap.h>
+#include <string>
+using namespace std::this_thread;	  // sleep_for, sleep_until
+using namespace std::chrono_literals; // ns, us, ms, s, h, etc.
+using std::chrono::system_clock;
 
 Piece::Piece(int cellX, int cellY, wxBitmap image, std::string id)
 {
@@ -80,15 +86,81 @@ void Piece::move(int targetX, int targetY, Board *board)
 		if (board->getPieceAt(targetX, targetY)->getId().find("King") != std::string::npos)
 			board->setGameFinished(true);
 	}
-	wxLogMessage("From: x=%d y=%d\tTo: x=%d y=%d", cellX, cellY, targetX, targetY);
-	board->ur5.setX(cellX);
-	board->ur5.setY(cellY);
-
+	// Copy fromCell and toCell
+	int tempCellX = cellX;
+	int tempCellY = cellY;
+	int tempTargetX = targetX;
+	int tempTargetY = targetY;
+	bool isTherePiece = board->isTherePiece(targetX, targetY);
+	// Move piece
 	board->getCellAt(cellX, cellY)->setPiece(nullptr);
 	cellX = targetX;
 	cellY = targetY;
 	board->getCellAt(targetX, targetY)->setPiece(this);
+	// Send coordinates to the log
+	wxLogMessage("%s From: x=%d y=%d\tTo: x=%d y=%d", id, tempCellX, tempCellY, tempTargetX, tempTargetY);
+	// Send the UR5 to the target cell
+	if (board->ur5.isConnected())
+	{
+		if (isTherePiece)
+		{
+			// If there's a piece in the target cell, remove it
+			board->ur5.setX(tempTargetX);
+			board->ur5.setY(tempTargetY);
+			board->ur5.setZ(200);
+			board->ur5.setDO(1);
+			while (board->ur5.getDO() != 2)
+			{
+				wxLogMessage("Waiting for the UR5 to finish the movement");
+				sleep_until(system_clock::now() + 5s);
+			};
+			// Then move to the position outside the board
+			board->ur5.setX(3);
+			board->ur5.setY(8);
+			board->ur5.setZ(200);
+			board->ur5.setDO(1);
+			// while (board->ur5.getDO() != 2)
+			{};
+			// Get piece from initial cell
+			board->ur5.setX(tempCellX);
+			board->ur5.setY(tempCellY);
+			board->ur5.setZ(200);
+			board->ur5.setDO(1);
+			// while (board->ur5.getDO() != 2)
+			{};
+			// Then move to the target cell
+			board->ur5.setX(tempTargetX);
+			board->ur5.setY(tempTargetY);
+			board->ur5.setZ(200);
+			board->ur5.setDO(1);
+			// while (board->ur5.getDO() != 2)
+			{};
+		}
+		else
+		{
+			// If there's no piece in the target cell, just take the piece from the initial cell
+			board->ur5.setX(tempCellX);
+			board->ur5.setY(tempCellY);
+			board->ur5.setZ(200);
+			board->ur5.setDO(1);
+			// while (board->ur5.getDO() != 2)
+			{};
+			// Then move to the target cell
+			board->ur5.setX(tempTargetX);
+			board->ur5.setY(tempTargetY);
+			board->ur5.setZ(200);
+			board->ur5.setDO(1);
+			// while (board->ur5.getDO() != 2)
+			{};
+		}
+	}
+	else
+	{
+		wxLogMessage("Can't send coordinates to UR5!");
+	}
 }
+
+// Create the pieces and set their possible moves
 
 Pawn::Pawn(int cellX, int cellY, wxBitmap image, std::string id)
 	: Piece(cellX, cellY, image, id)
