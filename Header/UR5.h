@@ -4,14 +4,13 @@
 class UR5
 {
 private:
-    modbus_t *mb;
     uint16_t xCorner = 300;
     uint16_t yCorner = 400;
     bool connected = false;
 
 public:
+    modbus_t *mb;
     UR5();
-    ~UR5();
     void setX(int cellY);
     void setY(int cellY);
     void setZ(int val);

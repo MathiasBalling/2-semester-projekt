@@ -93,7 +93,7 @@ bool Board::isTherePiece(int cellX, int cellY)
 
 void Board::initPieces()
 {
-	std::string ids[]={"Rook_0", "Knight_0", "Bishop_0", "Queen", "King", "Bishop_1", "Knight_1", "Rook_1"};
+	std::string ids[] = {"Rook_0", "Knight_0", "Bishop_0", "Queen", "King", "Bishop_1", "Knight_1", "Rook_1"};
 	// Init black pawns
 	for (int x = 0; x < 8; x++)
 	{

@@ -11,18 +11,14 @@ UR5::UR5()
     else
     {
         wxLogMessage("Modbus: Connection Successful!");
+        setDO(0);
         connected = true;
     }
 }
 
-UR5::~UR5()
-{
-    modbus_close(mb);
-    modbus_free(mb);
-}
-
 void UR5::setX(int cellX)
 {
+    modbus_connect(mb);
     if (!isConnected())
     {
         wxLogMessage("Modbus: Counldn't set x!");
@@ -44,7 +40,7 @@ void UR5::setX(int cellX)
 
 void UR5::setY(int cellY)
 {
-
+    modbus_connect(mb);
     uint16_t val = yCorner + 40 * cellY;
     int msg = modbus_write_register(mb, 129, val);
     if (msg == -1)
@@ -59,7 +55,7 @@ void UR5::setY(int cellY)
 
 void UR5::setZ(int val)
 {
-
+    modbus_connect(mb);
     int msg = modbus_write_register(mb, 130, val);
     if (msg == -1)
     {
@@ -73,6 +69,7 @@ void UR5::setZ(int val)
 
 void UR5::setDO(uint16_t val)
 {
+    modbus_connect(mb);
     int msg = modbus_write_register(mb, 1, val);
     if (msg == -1)
     {
@@ -86,7 +83,7 @@ void UR5::setDO(uint16_t val)
 
 int UR5::getDO()
 {
-
+    modbus_connect(mb);
     uint16_t val;
     int msg = modbus_read_registers(mb, 1, 1, &val);
     if (msg == -1)
@@ -117,7 +114,7 @@ void UR5::movePiece(int x, int y, int z)
     while (getDO() != 3)
     {
     }
-    wxMilliSleep(5000); // Wait for piece to be picked up
+    wxMilliSleep(3000); // Wait for piece to be picked up
     setDO(0);
     wxMilliSleep(1000);
 }

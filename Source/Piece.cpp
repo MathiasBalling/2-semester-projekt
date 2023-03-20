@@ -94,13 +94,10 @@ void Piece::move(int targetX, int targetY, Board *board)
 	board->getCellAt(targetX, targetY)->setPiece(this);
 	// Send coordinates to the log
 	wxLogMessage("%s From: x=%d y=%d\tTo: x=%d y=%d", id, tempCellX, tempCellY, tempTargetX, tempTargetY);
-	//int xxxx = board->ur.getDO();
-	//wxLogMessage("DO=%d", xxxx);
 
-	board->ur.setDO(1);
 	// Send the UR5 to the target cell
 
-	/*if (board->ur.isConnected())
+	if (board->ur.isConnected())
 	{
 		if (isTherePiece)
 		{
@@ -124,7 +121,7 @@ void Piece::move(int targetX, int targetY, Board *board)
 	else
 	{
 		wxLogMessage("Can't send coordinates to UR5!");
-	}*/
+	}
 }
 
 // Create the pieces and set their possible moves
