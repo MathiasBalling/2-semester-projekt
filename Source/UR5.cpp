@@ -73,7 +73,6 @@ void UR5::setZ(int val)
 
 void UR5::setDO(uint16_t val)
 {
-    mb = modbus_new_tcp("192.168.100.11", 502);
     int msg = modbus_write_register(mb, 1, val);
     if (msg == -1)
     {
