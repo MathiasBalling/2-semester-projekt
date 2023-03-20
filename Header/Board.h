@@ -25,7 +25,7 @@ public:
 	void eraseAllIllumination();
 	void setGameFinished(bool gameFinished);
 	bool isGameFinished();
-	UR5 ur5;
+	UR5 ur;
 
 private:
 	std::unordered_map<std::string, Piece *> pieces;
