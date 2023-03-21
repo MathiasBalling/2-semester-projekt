@@ -1,0 +1,77 @@
+def Gruppe6_1603():
+  set_tool_voltage(0)
+  set_gravity([0.0, 0.0, 9.82])
+  set_standard_analog_input_domain(0, 1)
+  set_standard_analog_input_domain(1, 1)
+  set_tool_analog_input_domain(0, 1)
+  set_tool_analog_input_domain(1, 1)
+  set_analog_outputdomain(0, 0)
+  set_analog_outputdomain(1, 0)
+  set_input_actions_to_default()
+  set_safety_mode_transition_hardness(1)
+  set_tcp(p[0.0,0.0,0.0,0.0,0.0,0.0])
+  set_payload(1.2)
+  step_count_92efe1ec_8001_479f_93ab_be767d88d858 = 0.0
+  thread Step_Counter_Thread_16361fad_101e_4421_abdf_57b3ef65e4b3():
+    while (True):
+      step_count_92efe1ec_8001_479f_93ab_be767d88d858 = step_count_92efe1ec_8001_479f_93ab_be767d88d858 + 1.0
+      sync()
+    end
+  end
+  run Step_Counter_Thread_16361fad_101e_4421_abdf_57b3ef65e4b3()
+  global backplane=p[-0.15737370817628538,0.2799793094847624,0.7816483469373849,-1.4691659225094995,1.008325136481848,1.5011870676714745]
+  global floorplane=p[0.1784933770843722,-0.27525998819865916,0.1700133094965755,-2.6393555722045052,1.7038419785106398,-6.737098233806255E-6]
+  global sideplane_l=p[-0.22032852338065761,-0.45506041225262694,0.724971101300959,-0.9638378251175971,-1.5237833442455342,1.5507433188768158]
+  global sideplane_r=p[0.4272796840579208,-0.2693139873095931,0.5213518430691942,0.9425958501857862,1.5121509074533068,1.4683209981815337]
+  global tightplane_l=p[0.038167121745709576,-0.6650061644044386,0.4574929211731964,-0.97566042861607,-1.4860161618539123,1.4919995199360474]
+  global tightplane_r=p[0.3839874320681153,-0.4857182343091132,0.4987478633712163,-0.2757474933763824,1.5660285824459563,0.34360205421721324]
+  # begin: URCap Installation Node
+  #   Source: weiss_simple, 1.0.0, University of Southern Denmark
+  #   Type: SDU Simple Weiss Gripper
+  weiss_daemon = rpc_factory("xmlrpc", "http://127.0.0.1:40405/RPC2")
+  # end: URCap Installation Node
+  $ 1 "BeforeStart"
+  $ 2 "Set DO[1]=Off"
+  set_standard_digital_out(1, False)
+  $ 3 "Set CO[0]=Off"
+  set_configurable_digital_out(0, False)
+  $ 4 "MoveJ"
+  $ 5 "Waypoint_1" "breakAfter"
+  movej(get_inverse_kin(p[.199763214119, -.710547445584, .629494112836, 1.034726300450, -.991854196321, 2.121886063633], qnear=[-1.1512201468097132, -2.494377915059225, -0.223367993031637, 0.015202045440673828, 1.6105154752731323, -1.1210172812091272]), a=1.3962634015954636, v=1.0471975511965976)
+  while (True):
+    $ 6 "Robot Program"
+    $ 7 "Wait config_out[0]≟ True "
+    while (not(get_configurable_digital_out(0) ==   True  )):
+      sync()
+    end
+    $ 8 "Set CO[0]=Off"
+    set_configurable_digital_out(0, False)
+    $ 9 "Piece_x≔read_port_register(128)/1000"
+    global Piece_x=read_port_register(128)/1000
+    $ 10 "Piece_y≔read_port_register(129)/-1000"
+    global Piece_y=read_port_register(129)/-1000
+    $ 11 "Piece_z≔read_port_register(130)/1000"
+    global Piece_z=read_port_register(130)/1000
+    $ 12 "Take_Piece≔p[Piece_x,Piece_y,Piece_z,2.3,-2.2,0]"
+    global Take_Piece=p[Piece_x,Piece_y,Piece_z,2.3,-2.2,0]
+    $ 13 "Over_Piece≔p[Piece_x,Piece_y,0.4,2.3,-2.2,0]"
+    global Over_Piece=p[Piece_x,Piece_y,0.4,2.3,-2.2,0]
+    $ 14 "MoveL"
+    $ 15 "Over_Piece" "breakAfter"
+    movel(pose_trans(p[0.0,0.0,0.0,0.0,0.0,0.0], Over_Piece), a=1.2, v=0.25)
+    $ 16 "Take_Piece" "breakAfter"
+    movel(pose_trans(p[0.0,0.0,0.0,0.0,0.0,0.0], Take_Piece), a=1.2, v=0.25)
+    $ 17 "Set DO[1]=On"
+    set_standard_digital_out(1, True)
+    $ 18 "Wait config_out[0]≟ True "
+    while (not(get_configurable_digital_out(0) ==   True  )):
+      sync()
+    end
+    $ 19 "Set CO[0]=Off"
+    set_configurable_digital_out(0, False)
+    $ 20 "Set DO[1]=Off"
+    set_standard_digital_out(1, False)
+    $ 21 "Over_Piece" "breakAfter"
+    movel(pose_trans(p[0.0,0.0,0.0,0.0,0.0,0.0], Over_Piece), a=1.2, v=0.25)
+  end
+end
