@@ -97,25 +97,25 @@ void Piece::move(int targetX, int targetY, Board *board)
 
 	// Send the UR5 to the target cell
 
-	if (board->ur.isConnected())
+	if (board->ur->isConnected())
 	{
 		if (isTherePiece)
 		{
 			// If there's a piece in the target cell, remove it
-			board->ur.movePiece(tempTargetX, tempTargetY, 200);
+			board->ur->movePiece(tempTargetX, tempTargetY, 200);
 			// Then move to the position outside the board
-			board->ur.movePiece(3, 9, 200);
+			board->ur->movePiece(3, 9, 200);
 			// Get piece from initial cell
-			board->ur.movePiece(tempCellX, tempCellY, 200);
+			board->ur->movePiece(tempCellX, tempCellY, 200);
 			// Then move to the target cell
-			board->ur.movePiece(tempTargetX, tempTargetY, 200);
+			board->ur->movePiece(tempTargetX, tempTargetY, 200);
 		}
 		else
 		{
 			// If there's no piece in the target cell, just take the piece from the initial cell
-			board->ur.movePiece(tempCellX, tempCellY, 200);
+			board->ur->movePiece(tempCellX, tempCellY, 200);
 			// Then move to the target cell
-			board->ur.movePiece(tempTargetX, tempTargetY, 200);
+			board->ur->movePiece(tempTargetX, tempTargetY, 200);
 		}
 	}
 	else

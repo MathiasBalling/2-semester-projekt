@@ -11,7 +11,7 @@ UR5::UR5()
     else
     {
         wxLogMessage("Modbus: Connection Successful!");
-        setDO(0);
+        setCO(0);
         connected = true;
     }
 }
@@ -67,17 +67,17 @@ void UR5::setZ(int val)
     }
 }
 
-void UR5::setDO(uint16_t val)
+void UR5::setCO(uint16_t val)
 {
     modbus_connect(mb);
-    int msg = modbus_write_register(mb, 1, val);
+    int msg = modbus_write_register(mb, 31, val);
     if (msg == -1)
     {
         wxLogMessage("Modbus: Counldn't set Digital Output!");
     }
     else
     {
-        wxLogMessage("Set DO=%d", val);
+        wxLogMessage("Set CO=%d", val);
     }
 }
 
@@ -109,12 +109,12 @@ void UR5::movePiece(int x, int y, int z)
     setX(x);
     setY(y);
     setZ(z);
-    setDO(1);
+    setCO(1);
     wxMilliSleep(500);
-    while (getDO() != 3)
+    while (getDO() != 2)
     {
     }
     wxMilliSleep(3000); // Wait for piece to be picked up
-    setDO(0);
+    setCO(1);
     wxMilliSleep(1000);
 }

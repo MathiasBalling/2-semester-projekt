@@ -4,7 +4,7 @@
 class UR5
 {
 private:
-    uint16_t xCorner = 300;
+    uint16_t xCorner = 200;
     uint16_t yCorner = 400;
     bool connected = false;
 
@@ -14,7 +14,7 @@ public:
     void setX(int cellY);
     void setY(int cellY);
     void setZ(int val);
-    void setDO(uint16_t val);
+    void setCO(uint16_t val);
     int getDO();
     bool isConnected();
     void movePiece(int x, int y, int z);
