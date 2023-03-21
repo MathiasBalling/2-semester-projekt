@@ -4,8 +4,8 @@
 class UR5
 {
 private:
-    uint16_t xCorner = 200;
-    uint16_t yCorner = 400;
+    uint16_t xCorner = 223;
+    uint16_t yCorner = 470;
     bool connected = false;
 
 public:

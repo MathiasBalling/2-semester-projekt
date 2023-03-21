@@ -110,7 +110,6 @@ void UR5::movePiece(int x, int y, int z)
     setY(y);
     setZ(z);
     setCO(1);
-    wxMilliSleep(500);
     while (getDO() != 2)
     {
     }
