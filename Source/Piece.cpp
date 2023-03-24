@@ -82,7 +82,7 @@ void Piece::move(int targetX, int targetY, Board *board)
 			board->setGameFinished(true);
 	}
 	// Send coordinates to the log
-	// wxLogMessage("%s From: x=%d y=%d\tTo: x=%d y=%d", id, tempCellX, tempCellY, tempTargetX, tempTargetY);
+	wxLogMessage("%s From: x=%d y=%d\tTo: x=%d y=%d", id, cellX, cellY, targetX, targetY);
 
 	// Send the UR5 to the target cell
 
