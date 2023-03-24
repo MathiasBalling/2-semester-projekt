@@ -15,10 +15,21 @@ UR5::UR5()
     }
 }
 
-void UR5::setX(int cellX)
+uint16_t UR5::getX(int cellX)
 {
 
     uint16_t val = xCorner + 40 * cellX;
+    return val;
+}
+
+uint16_t UR5::getY(int cellY)
+{
+    uint16_t val = yCorner + 1 / 8 * dX * cellY;
+    return val;
+}
+
+void UR5::setXval(uint16_t val)
+{
     int msg = modbus_write_register(mb, 128, val);
     if (msg == -1)
     {
@@ -26,9 +37,8 @@ void UR5::setX(int cellX)
     }
 }
 
-void UR5::setY(int cellY)
+void UR5::setYval(uint16_t val)
 {
-    uint16_t val = yCorner + 40 * cellY;
     int msg = modbus_write_register(mb, 129, val);
     if (msg == -1)
     {
@@ -36,7 +46,7 @@ void UR5::setY(int cellY)
     }
 }
 
-void UR5::setZ(uint16_t val)
+void UR5::setZval(uint16_t val)
 {
     int msg = modbus_write_register(mb, 130, val);
     if (msg == -1)
@@ -78,6 +88,7 @@ void UR5::movePiece()
 {
     using namespace std::chrono_literals;
     using namespace std::this_thread;
+    getDirection();
     while (isConnected())
     {
         if (shouldRun())
@@ -93,10 +104,10 @@ void UR5::movePiece()
             wxLogMessage("Moving to: x=%d y:%d z:%d", x, y, z);
 
             // Load modbus with coordinates
-            setX(x);
-            setY(y);
-            setZ(z);
-            sleep_for(500ms);
+            setXval(getX(x));
+            setYval(getY(y));
+            setZval(z);
+            sleep_for(100ms);
             setCO(1);            // Start loading UR5 with coordinates and move to piece
             while (getDO() != 2) // Wait for UR5 to reach piece
             {
@@ -149,5 +160,28 @@ void UR5::printQueue()
     for (int i = 0, pos = 0; i <= piecePosQueue.size() - 3; i += 3, pos++)
     {
         wxLogMessage("Pos:%d x:%d y:%d z:%d", pos, piecePosQueue[i], piecePosQueue[i + 1], piecePosQueue[i + 2]);
+    }
+}
+
+void UR5::getDirection()
+{
+    uint16_t val[4];
+    int msg = modbus_read_registers(mb, 131, 4, val);
+    if (msg == -1)
+    {
+        wxLogMessage("Modbus: Counldn't get starting postition!");
+        return;
+    }
+    else
+    {
+        uint16_t xCornerBR = val[0];
+        uint16_t yCornerBR = val[1];
+        uint16_t xCornerTL = val[2];
+        uint16_t yCornerTL = val[3];
+        xCorner = xCornerBR;
+        yCorner = yCornerBR;
+        dX = xCornerBR - xCornerTL;
+        dY = yCornerBR - yCornerTL;
+        wxLogMessage("xCorner: %d yCorner: %d dX: %d dY: %d", xCorner, yCorner, dX, dY);
     }
 }

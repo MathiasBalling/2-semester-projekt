@@ -10,6 +10,7 @@ class UR5
 private:
     uint16_t xCorner = 0;
     uint16_t yCorner = 300;
+    float dX = 320, dY = 320;
     bool connected = false;
     std::vector<int> piecePosQueue;
     std::thread _member_thread;
@@ -17,9 +18,11 @@ private:
 public:
     modbus_t *mb;
     UR5();
-    void setX(int cellY);
-    void setY(int cellY);
-    void setZ(u_int16_t val);
+    uint16_t getX(int cellY);
+    uint16_t getY(int cellY);
+    void setXval(uint16_t val);
+    void setYval(uint16_t val);
+    void setZval(uint16_t val);
     void setCO(uint16_t val);
     int getDO();
     bool isConnected();
@@ -27,4 +30,5 @@ public:
     bool shouldRun();
     void moveQueue(int cellX, int cellY, uint16_t z);
     void printQueue();
+    void getDirection();
 };
