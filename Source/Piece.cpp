@@ -81,17 +81,6 @@ void Piece::move(int targetX, int targetY, Board *board)
 		if (board->getPieceAt(targetX, targetY)->getId().find("King") != std::string::npos)
 			board->setGameFinished(true);
 	}
-	// Copy fromCell and toCell
-	int tempCellX = cellX;
-	int tempCellY = cellY;
-	int tempTargetX = targetX;
-	int tempTargetY = targetY;
-	bool isTherePiece = board->isTherePiece(targetX, targetY);
-	// Move piece
-	board->getCellAt(cellX, cellY)->setPiece(nullptr);
-	cellX = targetX;
-	cellY = targetY;
-	board->getCellAt(targetX, targetY)->setPiece(this);
 	// Send coordinates to the log
 	wxLogMessage("%s From: x=%d y=%d\tTo: x=%d y=%d", id, tempCellX, tempCellY, tempTargetX, tempTargetY);
 
@@ -99,29 +88,34 @@ void Piece::move(int targetX, int targetY, Board *board)
 
 	if (board->ur->isConnected())
 	{
-		if (isTherePiece)
+		if (board->isTherePiece(targetX, targetY))
 		{
 			// If there's a piece in the target cell, remove it
-			board->ur->moveQueue(tempTargetX, tempTargetY, 200);
+			board->ur->moveQueue(targetX, targetY, 200);
 			// Then move to the position outside the board
 			board->ur->moveQueue(3, 9, 200);
 			// Get piece from initial cell
-			board->ur->moveQueue(tempCellX, tempCellY, 200);
+			board->ur->moveQueue(cellX, cellY, 200);
 			// Then move to the target cell
-			board->ur->moveQueue(tempTargetX, tempTargetY, 200);
+			board->ur->moveQueue(targetX, targetY, 200);
 		}
 		else
 		{
 			// If there's no piece in the target cell, just take the piece from the initial cell
-			board->ur->moveQueue(tempCellX, tempCellY, 200);
+			board->ur->moveQueue(cellX, cellY, 200);
 			// Then move to the target cell
-			board->ur->moveQueue(tempTargetX, tempTargetY, 200);
+			board->ur->moveQueue(targetX, targetY, 200);
 		}
 	}
 	else
 	{
 		wxLogMessage("Can't send coordinates to UR5!");
 	}
+	// Move piece
+	board->getCellAt(cellX, cellY)->setPiece(nullptr);
+	cellX = targetX;
+	cellY = targetY;
+	board->getCellAt(targetX, targetY)->setPiece(this);
 }
 
 // Create the pieces and set their possible moves

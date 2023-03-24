@@ -65,7 +65,6 @@ int UR5::getDO()
     }
     else
     {
-        wxLogMessage("Get DO=%d", val);
         return val;
     }
 }
@@ -83,6 +82,7 @@ void UR5::movePiece()
     {
         if (shouldRun())
         {
+            modbus_connect(mb);
             printQueue();
             // Get piece position from queue
             int x = piecePosQueue[0];
@@ -100,6 +100,7 @@ void UR5::movePiece()
             setCO(1);            // Start loading UR5 with coordinates and move to piece
             while (getDO() != 2) // Wait for UR5 to reach piece
             {
+                sleep_for(200ms);
                 if (getDO() == -1)
                 {
                     wxLogMessage("Modbus: Error getting Digital Output");
