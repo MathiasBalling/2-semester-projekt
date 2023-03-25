@@ -3,7 +3,10 @@
 
 ModBus::ModBus()
 {
+    // Add the ip address of the modbus device
     _mb = modbus_new_tcp("192.168.100.11", 502);
+
+    // Connect to the modbus device
     if (modbus_connect(_mb) == -1)
     {
         wxLogMessage("Modbus: Connection Failed!");
@@ -12,25 +15,50 @@ ModBus::ModBus()
     {
         wxLogMessage("Modbus: Connection Successful!");
         _connected = true;
+        // Start a worker thread to move pieces from the queue
         _member_thread = std::thread(&ModBus::movePiece, this);
     }
 }
 
 uint16_t ModBus::getX(int cellX)
 {
-
+    // Calculate the x position of the piece
     uint16_t val = _xCorner - 1 / 8 * _dY * cellX;
-    return val;
+
+    // The modbus device can't handle negative values
+    // Therefore all negative values are converted to positive values and added to 2000
+    // e.g. -100 -> 100 + 2000 = 2100 and the robot considers 2100 as -100
+    if (val < 0)
+    {
+        return val = val * -1 + 2000;
+    }
+    else
+    {
+        return val;
+    }
 }
 
 uint16_t ModBus::getY(int cellY)
 {
+    // Calculate the y position of the piece
     uint16_t val = _yCorner - 1 / 8 * _dX * cellY;
-    return val;
+
+    // The modbus device can't handle negative values
+    // Therefore all negative values are converted to positive values and added to 2000
+    // e.g. -100 -> 100 + 2000 = 2100 and the robot considers 2100 as -100
+    if (val < 0)
+    {
+        return val = val * -1 + 2000;
+    }
+    else
+    {
+        return val;
+    }
 }
 
 void ModBus::setXval(uint16_t val)
 {
+    // Write the x position to the modbus device
     int msg = modbus_write_register(_mb, 128, val);
     if (msg == -1)
     {
@@ -40,6 +68,7 @@ void ModBus::setXval(uint16_t val)
 
 void ModBus::setYval(uint16_t val)
 {
+    // Write the y position to the modbus device
     int msg = modbus_write_register(_mb, 129, val);
     if (msg == -1)
     {
@@ -49,6 +78,7 @@ void ModBus::setYval(uint16_t val)
 
 void ModBus::setZval(uint16_t val)
 {
+    // Write the z position to the modbus device
     int msg = modbus_write_register(_mb, 130, val);
     if (msg == -1)
     {
@@ -58,6 +88,7 @@ void ModBus::setZval(uint16_t val)
 
 void ModBus::setCO(uint16_t val)
 {
+    // Write the configurable output to the modbus device
     int msg = modbus_write_register(_mb, 31, val);
     if (msg == -1)
     {
@@ -67,6 +98,7 @@ void ModBus::setCO(uint16_t val)
 
 int ModBus::getDO()
 {
+    // Read the digital output from the modbus device
     uint16_t val;
     int msg = modbus_read_registers(_mb, 1, 1, &val);
     if (msg == -1)
@@ -87,10 +119,11 @@ bool ModBus::isConnected()
 
 void ModBus::movePiece()
 {
+    // To stop the thread for a specific amount of time
     using namespace std::chrono_literals;
     using namespace std::this_thread;
-    getDirection();
-    while (isConnected())
+
+    while (1)
     {
         if (shouldRun())
         {
@@ -109,8 +142,8 @@ void ModBus::movePiece()
             setYval(getY(y));
             setZval(z);
             sleep_for(100ms);
-            setCO(1);            // Start loading UR5 with coordinates and move to piece
-            while (getDO() != 2) // Wait for UR5 to reach piece
+            setCO(1);            // Tells the UR5 to load the coordinates and move
+            while (getDO() != 2) // Wait for UR5 to move
             {
                 sleep_for(200ms);
                 if (getDO() == -1)
@@ -120,11 +153,12 @@ void ModBus::movePiece()
                 }
             }
             sleep_for(3s); // Wait for grpper to close/open
-            setCO(1);
+            setCO(1);      // Tells the UR5 continue
         }
         else
         {
             wxLogMessage("Nothing to move, the queue is empty");
+            // If the queue is empty, wait 5 seconds and check again
             sleep_for(5s);
         }
     }
@@ -176,6 +210,8 @@ void ModBus::getDirection()
     else
     {
         int xCornerBR, yCornerBR, xCornerBL, yCornerBL;
+
+        // Convert the values to the correct format
         if (val[0] > 2000)
         {
             xCornerBR = val[0] * -1 + 2000;
@@ -212,8 +248,11 @@ void ModBus::getDirection()
             yCornerBL = val[3];
         }
 
+        // Set the values of the corners matching cell(0,0)
         _xCorner = xCornerBR;
         _yCorner = yCornerBR;
+
+        // Calculate the difference between the corners
         _dX = xCornerBL - xCornerBR;
         _dY = yCornerBR - yCornerBL;
         wxLogMessage("xCorner: %d yCorner: %d dX: %d dY: %d", _xCorner, _yCorner, _dX, _dY);

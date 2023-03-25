@@ -1,16 +1,14 @@
 #pragma once
 
-// Header Files
-#include "../Header/Board.fwd.h"
-#include "../Header/Piece.fwd.h"
-#include "../Header/ModBus.h"
-#include "../Header/Cell.h"
-
 // wxWidgets
 #include <wx/wx.h>
 
 // Standard Libraries
 #include <unordered_map>
+
+// Header Files
+#include "../Header/ModBus.h"
+#include "../Header/Cell.h"
 
 class Board
 {

@@ -1,12 +1,12 @@
 #pragma once
 
-// Header Files
-#include "Piece.fwd.h"
-#include "Board.fwd.h"
-#include "../Header/ChessFrame.h"
-
 // wxWidgets
 #include <wx/wx.h>
+
+// Header Files
+#include "../Header/ChessFrame.h"
+
+class Board;
 
 class Piece
 {

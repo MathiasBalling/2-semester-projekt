@@ -14,7 +14,7 @@
 class ModBus
 {
 private:
-    int _xCorner = 0, _yCorner = 300;
+    int _xCorner = 0, _yCorner = -300;
     int _dX = 320, _dY = 320;
     bool _connected = false;
     std::vector<int> _piecePosQueue;
