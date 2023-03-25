@@ -1,36 +1,37 @@
+// Header Files
 #include "../Header/Cell.h"
 
 Cell::Cell()
-	:illuminated{ false }, piece{ nullptr }
+	: _illuminated(false), _piece(nullptr)
 {
 }
 
-Piece* Cell::getPiece()
+Piece *Cell::getPiece()
 {
-	return piece;
+	return _piece;
 }
 
 bool Cell::isIlluminated()
 {
-	return illuminated;
+	return _illuminated;
 }
 
-void Cell::setPiece(Piece* piece)
+void Cell::setPiece(Piece *piece)
 {
-	this->piece = piece;
+	this->_piece = piece;
 }
 
 void Cell::turnOff()
 {
-	illuminated = false;
+	_illuminated = false;
 }
 
 void Cell::turnOn()
 {
-	illuminated = true;
+	_illuminated = true;
 }
 
 bool Cell::hasPiece()
 {
-	return piece != nullptr;
+	return _piece != nullptr;
 }

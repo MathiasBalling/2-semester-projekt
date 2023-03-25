@@ -1,7 +1,11 @@
 #pragma once
-#include <wx/wx.h>
+
+// Header Files
 #include "../Header/Board.h"
 #include "../Header/Pieces.h"
+
+// wxWidgets
+#include <wx/wx.h>
 #include <wx/graphics.h>
 
 class ChessPanel : public wxPanel
@@ -15,6 +19,6 @@ private:
 	void clearBuffer(wxGraphicsContext *gc);
 	void drawBoard(wxGraphicsContext *gc);
 	void drawPieces(wxGraphicsContext *gc);
-	Board *board;
-	bool enemySelected;
+	Board *_board;
+	bool _enemySelected;
 };

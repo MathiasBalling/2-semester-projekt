@@ -1,4 +1,6 @@
 #pragma once
+
+// wxWidgets
 #include <wx/wx.h>
 
 class ChessFrame : public wxFrame
@@ -9,5 +11,5 @@ public:
 
 private:
 	void OnAbout(wxCommandEvent &event);
-	wxLog *logger;
+	wxLog *_logger;
 };

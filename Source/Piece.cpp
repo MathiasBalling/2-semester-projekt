@@ -1,108 +1,122 @@
+// Header Files
 #include "../Header/Pieces.h"
 #include "../Header/Board.h"
+
+// wxWidgets
 #include <wx/bitmap.h>
+
+// Standard Libraries
 #include <string>
 
 Piece::Piece(int cellX, int cellY, wxBitmap image, std::string id)
 {
-	this->cellX = cellX;
-	this->cellY = cellY;
-	this->image = image;
-	this->id = id;
-	this->color = id[0] == 'W' ? "white" : "black";
-	this->alive = true;
+	_cellX = cellX;
+	_cellY = cellY;
+	_image = image;
+	_id = id;
+	_color = id[0] == 'W' ? "white" : "black";
+	_alive = true;
 }
 
 std::string Piece::getId()
 {
-	return id;
+	return _id;
 }
 
 int Piece::getCellX()
 {
-	return cellX;
+	return _cellX;
 }
 
 int Piece::getCellY()
 {
-	return cellY;
+	return _cellY;
 }
 
 void Piece::setCellX(int x)
 {
-	cellX = x;
+	_cellX = x;
 }
 
 void Piece::setCellY(int y)
 {
-	cellY = y;
+	_cellY = y;
 }
 
 wxBitmap Piece::getImage()
 {
-	return image;
+	return _image;
 }
 
 std::string Piece::getColor()
 {
-	return color;
+	return _color;
 }
 
 bool Piece::isAlive()
 {
-	return alive;
+	return _alive;
 }
 
 void Piece::setAlive(bool isAlive)
 {
-	alive = isAlive;
+	_alive = isAlive;
 }
 
 bool Piece::canMove(Board *board)
 {
+	//
 	illuminatePaths(board);
 	for (int x = 0; x < 8; x++)
+	{
 		for (int y = 0; y < 8; y++)
+		{
+			// Check if piece has any illuminated cells
 			if (board->getCellAt(x, y)->isIlluminated())
 			{
 				board->eraseAllIllumination();
 				return true;
 			}
+		}
+	}
+	// If there was no illuminated cells then the piece can't move
 	board->eraseAllIllumination();
 	return false;
 }
 
 void Piece::move(int targetX, int targetY, Board *board)
 {
-	// We're sure that it's not an ally because it wouldn't be illuminated
+	// Check if there's a piece in the target cell
 	if (board->isTherePiece(targetX, targetY))
 	{
 		board->getPieceAt(targetX, targetY)->setAlive(false);
+
+		// Check if the piece is a king	and set the game as finished
 		if (board->getPieceAt(targetX, targetY)->getId().find("King") != std::string::npos)
 			board->setGameFinished(true);
 	}
 	// Send coordinates to the log
-	wxLogMessage("%s From: x=%d y=%d\tTo: x=%d y=%d", id, cellX, cellY, targetX, targetY);
+	wxLogMessage("%s From: x=%d y=%d\tTo: x=%d y=%d", _id, _cellX, _cellY, targetX, targetY);
 
-	// Send the UR5 to the target cell
-
+	// Check if Modbus is connected
 	if (board->ur->isConnected())
 	{
+		// Check if there's a piece in the target cell
 		if (board->isTherePiece(targetX, targetY))
 		{
-			// If there's a piece in the target cell, remove it
+			// Take the piece from the target cell
 			board->ur->moveQueue(targetX, targetY, 200);
 			// Then move to the position outside the board
 			board->ur->moveQueue(3, 9, 200);
 			// Get piece from initial cell
-			board->ur->moveQueue(cellX, cellY, 200);
+			board->ur->moveQueue(_cellX, _cellY, 200);
 			// Then move to the target cell
 			board->ur->moveQueue(targetX, targetY, 200);
 		}
 		else
 		{
 			// If there's no piece in the target cell, just take the piece from the initial cell
-			board->ur->moveQueue(cellX, cellY, 200);
+			board->ur->moveQueue(_cellX, _cellY, 200);
 			// Then move to the target cell
 			board->ur->moveQueue(targetX, targetY, 200);
 		}
@@ -111,15 +125,15 @@ void Piece::move(int targetX, int targetY, Board *board)
 	{
 		wxLogMessage("Can't send coordinates to UR5!");
 	}
-	// Move piece
-	board->getCellAt(cellX, cellY)->setPiece(nullptr);
-	cellX = targetX;
-	cellY = targetY;
+
+	// Move piece on the board
+	board->getCellAt(_cellX, _cellY)->setPiece(nullptr);
+	_cellX = targetX;
+	_cellY = targetY;
 	board->getCellAt(targetX, targetY)->setPiece(this);
 }
 
 // Create the pieces and set their possible moves
-
 Pawn::Pawn(int cellX, int cellY, wxBitmap image, std::string id)
 	: Piece(cellX, cellY, image, id)
 {
@@ -128,31 +142,33 @@ Pawn::Pawn(int cellX, int cellY, wxBitmap image, std::string id)
 void Pawn::illuminatePaths(Board *board)
 {
 	int sign = 1;
-	if (color == "black")
+	if (_color == "black")
 		sign = -1;
 	std::pair<int, int> offsets[3] = {{-1, -1 * sign}, {0, -1 * sign}, {1, -1 * sign}};
 
 	for (auto offset : offsets)
 	{
-		if (cellX + offset.first >= 0 && cellX + offset.first < 8 && cellY + offset.second >= 0 && cellY + offset.second < 8)
+		if (_cellX + offset.first >= 0 && _cellX + offset.first < 8 && _cellY + offset.second >= 0 && _cellY + offset.second < 8)
 			if (offset.first == 0)
 			{
-				if (!board->isTherePiece(cellX, cellY + offset.second))
+				// Check if there's a piece in front of the pawn
+				if (!board->isTherePiece(_cellX, _cellY + offset.second))
 				{
-					board->getCellAt(cellX, cellY + offset.second)->turnOn();
+					board->getCellAt(_cellX, _cellY + offset.second)->turnOn();
 				}
 			}
 			else
 			{
-				if (board->isThereEnemy(cellX + offset.first, cellY + offset.second))
+				// Check if there's an enemy in the diagonal cells
+				if (board->isThereEnemy(_cellX + offset.first, _cellY + offset.second))
 				{
-					board->getCellAt(cellX + offset.first, cellY + offset.second)->turnOn();
+					board->getCellAt(_cellX + offset.first, _cellY + offset.second)->turnOn();
 				}
 			}
 	}
 	// Check if it's the pawn's first move
-	if ((cellY == 6 && color == "white") || (cellY == 1 && color == "black"))
-		board->getCellAt(cellX, cellY - 2 * sign)->turnOn();
+	if ((_cellY == 6 && _color == "white" && !(board->isTherePiece(_cellX, 4))) || (_cellY == 1 && _color == "black" && !(board->isTherePiece(_cellX, 3))))
+		board->getCellAt(_cellX, _cellY - 2 * sign)->turnOn();
 }
 Rook::Rook(int cellX, int cellY, wxBitmap image, std::string id)
 	: Piece(cellX, cellY, image, id)
@@ -163,25 +179,25 @@ void Rook::illuminatePaths(Board *board)
 {
 	// Upward dir
 	int x, y;
-	for (y = cellY - 1; y >= 0 && !board->isTherePiece(cellX, y); y--)
-		board->getCellAt(cellX, y)->turnOn();
-	if (y >= 0 && board->isThereEnemy(cellX, y))
-		board->getCellAt(cellX, y)->turnOn();
+	for (y = _cellY - 1; y >= 0 && !board->isTherePiece(_cellX, y); y--)
+		board->getCellAt(_cellX, y)->turnOn();
+	if (y >= 0 && board->isThereEnemy(_cellX, y))
+		board->getCellAt(_cellX, y)->turnOn();
 	// Downward dir
-	for (y = cellY + 1; y < 8 && !board->isTherePiece(cellX, y); y++)
-		board->getCellAt(cellX, y)->turnOn();
-	if (y < 8 && board->isThereEnemy(cellX, y))
-		board->getCellAt(cellX, y)->turnOn();
+	for (y = _cellY + 1; y < 8 && !board->isTherePiece(_cellX, y); y++)
+		board->getCellAt(_cellX, y)->turnOn();
+	if (y < 8 && board->isThereEnemy(_cellX, y))
+		board->getCellAt(_cellX, y)->turnOn();
 	// Left dir
-	for (x = cellX - 1; x >= 0 && !board->isTherePiece(x, cellY); x--)
-		board->getCellAt(x, cellY)->turnOn();
-	if (x >= 0 && board->isThereEnemy(x, cellY))
-		board->getCellAt(x, cellY)->turnOn();
+	for (x = _cellX - 1; x >= 0 && !board->isTherePiece(x, _cellY); x--)
+		board->getCellAt(x, _cellY)->turnOn();
+	if (x >= 0 && board->isThereEnemy(x, _cellY))
+		board->getCellAt(x, _cellY)->turnOn();
 	// Right dir
-	for (x = cellX + 1; x < 8 && !board->isTherePiece(x, cellY); x++)
-		board->getCellAt(x, cellY)->turnOn();
-	if (x < 8 && board->isThereEnemy(x, cellY))
-		board->getCellAt(x, cellY)->turnOn();
+	for (x = _cellX + 1; x < 8 && !board->isTherePiece(x, _cellY); x++)
+		board->getCellAt(x, _cellY)->turnOn();
+	if (x < 8 && board->isThereEnemy(x, _cellY))
+		board->getCellAt(x, _cellY)->turnOn();
 }
 
 Knight::Knight(int cellX, int cellY, wxBitmap image, std::string id)
@@ -194,8 +210,8 @@ void Knight::illuminatePaths(Board *board)
 	std::pair<int, int> offsets[8] = {{-1, -2}, {-1, 2}, {-2, 1}, {-2, -1}, {1, -2}, {1, 2}, {2, -1}, {2, 1}};
 	for (auto offset : offsets)
 	{
-		if (cellX + offset.first >= 0 && cellX + offset.first < 8 && cellY + offset.second >= 0 && cellY + offset.second < 8 && !board->isThereAlly(cellX + offset.first, cellY + offset.second))
-			board->getCellAt(cellX + offset.first, cellY + offset.second)->turnOn();
+		if (_cellX + offset.first >= 0 && _cellX + offset.first < 8 && _cellY + offset.second >= 0 && _cellY + offset.second < 8 && !board->isThereAlly(_cellX + offset.first, _cellY + offset.second))
+			board->getCellAt(_cellX + offset.first, _cellY + offset.second)->turnOn();
 	}
 }
 
@@ -208,22 +224,22 @@ void Bishop::illuminatePaths(Board *board)
 {
 	// Illuminate top-left dir
 	int x, y;
-	for (x = cellX - 1, y = cellY - 1; x >= 0 && y >= 0 && !board->isTherePiece(x, y); x--, y--)
+	for (x = _cellX - 1, y = _cellY - 1; x >= 0 && y >= 0 && !board->isTherePiece(x, y); x--, y--)
 		board->getCellAt(x, y)->turnOn();
 	if (x >= 0 && y >= 0 && board->isThereEnemy(x, y))
 		board->getCellAt(x, y)->turnOn();
 	// Illuminate top-right dir
-	for (x = cellX + 1, y = cellY - 1; x < 8 && y >= 0 && !board->isTherePiece(x, y); x++, y--)
+	for (x = _cellX + 1, y = _cellY - 1; x < 8 && y >= 0 && !board->isTherePiece(x, y); x++, y--)
 		board->getCellAt(x, y)->turnOn();
 	if (x < 8 && y >= 0 && board->isThereEnemy(x, y))
 		board->getCellAt(x, y)->turnOn();
 	// Illuminate bottom-left dir
-	for (x = cellX - 1, y = cellY + 1; x >= 0 && y < 8 && !board->isTherePiece(x, y); x--, y++)
+	for (x = _cellX - 1, y = _cellY + 1; x >= 0 && y < 8 && !board->isTherePiece(x, y); x--, y++)
 		board->getCellAt(x, y)->turnOn();
 	if (x >= 0 && y < 8 && board->isThereEnemy(x, y))
 		board->getCellAt(x, y)->turnOn();
 	// Illuminate bottom-right dir
-	for (x = cellX + 1, y = cellY + 1; x < 8 && y < 8 && !board->isTherePiece(x, y); x++, y++)
+	for (x = _cellX + 1, y = _cellY + 1; x < 8 && y < 8 && !board->isTherePiece(x, y); x++, y++)
 		board->getCellAt(x, y)->turnOn();
 	if (x < 8 && y < 8 && board->isThereEnemy(x, y))
 		board->getCellAt(x, y)->turnOn();
@@ -238,46 +254,46 @@ void Queen::illuminatePaths(Board *board)
 {
 	// Illuminate top-left dir
 	int x, y;
-	for (x = cellX - 1, y = cellY - 1; x >= 0 && y >= 0 && !board->isTherePiece(x, y); x--, y--)
+	for (x = _cellX - 1, y = _cellY - 1; x >= 0 && y >= 0 && !board->isTherePiece(x, y); x--, y--)
 		board->getCellAt(x, y)->turnOn();
 	if (x >= 0 && y >= 0 && board->isThereEnemy(x, y))
 		board->getCellAt(x, y)->turnOn();
 	// Illuminate top-right dir
-	for (x = cellX + 1, y = cellY - 1; x < 8 && y >= 0 && !board->isTherePiece(x, y); x++, y--)
+	for (x = _cellX + 1, y = _cellY - 1; x < 8 && y >= 0 && !board->isTherePiece(x, y); x++, y--)
 		board->getCellAt(x, y)->turnOn();
 	if (x < 8 && y >= 0 && board->isThereEnemy(x, y))
 		board->getCellAt(x, y)->turnOn();
 	// Illuminate bottom-left dir
-	for (x = cellX - 1, y = cellY + 1; x >= 0 && y < 8 && !board->isTherePiece(x, y); x--, y++)
+	for (x = _cellX - 1, y = _cellY + 1; x >= 0 && y < 8 && !board->isTherePiece(x, y); x--, y++)
 		board->getCellAt(x, y)->turnOn();
 	if (x >= 0 && y < 8 && board->isThereEnemy(x, y))
 		board->getCellAt(x, y)->turnOn();
 	// Illuminate bottom-right dir
-	for (x = cellX + 1, y = cellY + 1; x < 8 && y < 8 && !board->isTherePiece(x, y); x++, y++)
+	for (x = _cellX + 1, y = _cellY + 1; x < 8 && y < 8 && !board->isTherePiece(x, y); x++, y++)
 		board->getCellAt(x, y)->turnOn();
 	if (x < 8 && y < 8 && board->isThereEnemy(x, y))
 		board->getCellAt(x, y)->turnOn();
 
-	// Upward dir
-	for (y = cellY - 1; y >= 0 && !board->isTherePiece(cellX, y); y--)
-		board->getCellAt(cellX, y)->turnOn();
-	if (y >= 0 && board->isThereEnemy(cellX, y))
-		board->getCellAt(cellX, y)->turnOn();
+	// Illuminate upward dir
+	for (y = _cellY - 1; y >= 0 && !board->isTherePiece(_cellX, y); y--)
+		board->getCellAt(_cellX, y)->turnOn();
+	if (y >= 0 && board->isThereEnemy(_cellX, y))
+		board->getCellAt(_cellX, y)->turnOn();
 	// Downward dir
-	for (y = cellY + 1; y < 8 && !board->isTherePiece(cellX, y); y++)
-		board->getCellAt(cellX, y)->turnOn();
-	if (y < 8 && board->isThereEnemy(cellX, y))
-		board->getCellAt(cellX, y)->turnOn();
+	for (y = _cellY + 1; y < 8 && !board->isTherePiece(_cellX, y); y++)
+		board->getCellAt(_cellX, y)->turnOn();
+	if (y < 8 && board->isThereEnemy(_cellX, y))
+		board->getCellAt(_cellX, y)->turnOn();
 	// Left dir
-	for (x = cellX - 1; x >= 0 && !board->isTherePiece(x, cellY); x--)
-		board->getCellAt(x, cellY)->turnOn();
-	if (x >= 0 && board->isThereEnemy(x, cellY))
-		board->getCellAt(x, cellY)->turnOn();
+	for (x = _cellX - 1; x >= 0 && !board->isTherePiece(x, _cellY); x--)
+		board->getCellAt(x, _cellY)->turnOn();
+	if (x >= 0 && board->isThereEnemy(x, _cellY))
+		board->getCellAt(x, _cellY)->turnOn();
 	// Right dir
-	for (x = cellX + 1; x < 8 && !board->isTherePiece(x, cellY); x++)
-		board->getCellAt(x, cellY)->turnOn();
-	if (x < 8 && board->isThereEnemy(x, cellY))
-		board->getCellAt(x, cellY)->turnOn();
+	for (x = _cellX + 1; x < 8 && !board->isTherePiece(x, _cellY); x++)
+		board->getCellAt(x, _cellY)->turnOn();
+	if (x < 8 && board->isThereEnemy(x, _cellY))
+		board->getCellAt(x, _cellY)->turnOn();
 }
 
 King::King(int cellX, int cellY, wxBitmap image, std::string id)
@@ -290,7 +306,7 @@ void King::illuminatePaths(Board *board)
 	std::pair<int, int> offsets[8] = {{-1, -1}, {-1, 1}, {-1, 0}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
 	for (auto offset : offsets)
 	{
-		if (cellX + offset.first >= 0 && cellX + offset.first < 8 && cellY + offset.second >= 0 && cellY + offset.second < 8 && !board->isThereAlly(cellX + offset.first, cellY + offset.second))
-			board->getCellAt(cellX + offset.first, cellY + offset.second)->turnOn();
+		if (_cellX + offset.first >= 0 && _cellX + offset.first < 8 && _cellY + offset.second >= 0 && _cellY + offset.second < 8 && !board->isThereAlly(_cellX + offset.first, _cellY + offset.second))
+			board->getCellAt(_cellX + offset.first, _cellY + offset.second)->turnOn();
 	}
 }

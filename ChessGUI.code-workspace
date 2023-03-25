@@ -73,7 +73,13 @@
 			"variant": "cpp",
 			"vector": "cpp",
 			"algorithm": "cpp",
-			"thread": "cpp"
+			"thread": "cpp",
+			"functional": "cpp",
+			"hash_map": "cpp",
+			"version": "cpp",
+			"iterator": "cpp",
+			"memory_resource": "cpp",
+			"utility": "cpp"
 		}
 	}
 }
