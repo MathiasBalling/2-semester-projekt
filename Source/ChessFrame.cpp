@@ -1,3 +1,4 @@
+// Header Files
 #include "../Header/ChessFrame.h"
 #include "../Header/ChessPanel.h"
 #include "../Header/Board.h"
@@ -5,15 +6,20 @@
 ChessFrame::ChessFrame(const wxString &title)
 	: wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(1000, 1000))
 {
-	// Center();
-	logger = new wxLogWindow(this, "Chess Log", true, false);
-	wxLog::SetActiveTarget(logger);
+	// Create a logger window
+	_logger = new wxLogWindow(this, "Chess Log", true, false);
+	wxLog::SetActiveTarget(_logger);
 
+	//
 	wxImage::AddHandler(new wxPNGHandler());
+
+	// Create the board
 	Board *board = new Board();
 
+	// Create the panel (graphics)
 	ChessPanel *chessPanel = new ChessPanel(this, board);
 
+	// Create the menu
 	wxMenu *menuHelp = new wxMenu;
 	menuHelp->Append(wxID_ABOUT);
 
@@ -32,5 +38,5 @@ void ChessFrame::OnAbout(wxCommandEvent &event)
 ChessFrame::~ChessFrame()
 {
 	wxLog::SetActiveTarget(nullptr);
-	delete logger;
+	delete _logger;
 }

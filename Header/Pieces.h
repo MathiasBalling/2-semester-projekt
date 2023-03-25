@@ -1,8 +1,12 @@
 #pragma once
-#include "Piece.fwd.h"
-#include "Board.fwd.h"
-#include "../Header/ChessFrame.h"
+
+// wxWidgets
 #include <wx/wx.h>
+
+// Header Files
+#include "../Header/ChessFrame.h"
+
+class Board;
 
 class Piece
 {
@@ -20,11 +24,11 @@ public:
 	void setAlive(bool isAlive);
 
 protected:
-	int cellX, cellY;
-	std::string id;
-	wxBitmap image;
-	std::string color;
-	bool alive;
+	int _cellX, _cellY;
+	std::string _id;
+	wxBitmap _image;
+	std::string _color;
+	bool _alive;
 };
 
 class Pawn : public Piece

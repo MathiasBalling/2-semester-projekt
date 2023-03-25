@@ -1,4 +1,6 @@
 #pragma once
+
+// Header Files
 #include "../Header/Pieces.h"
 
 class Cell
@@ -14,7 +16,7 @@ public:
 	
 
 private:
-	Piece* piece;
-	bool illuminated;
+	Piece* _piece;
+	bool _illuminated;
 
 };
