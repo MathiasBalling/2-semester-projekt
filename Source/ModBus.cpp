@@ -3,6 +3,11 @@
 
 ModBus::ModBus()
 {
+    // Create a new window to display the queue
+    queueWindow = new QueueWindow(wxT("Queue"));
+    queueWindow->SetClientSize(wxSize(500, 500));
+    queueWindow->Show(true);
+
     // Add the ip address of the modbus device
     _mb = modbus_new_tcp("192.168.100.11", 502);
 

@@ -1,7 +1,7 @@
 #pragma once
 
 // Header Files
-#include <modbus.h>
+#include "../Header/QueueWindow.h"
 
 // Standard Libraries
 #include <vector>
@@ -10,6 +10,9 @@
 
 // wxWidgets
 #include <wx/wx.h>
+
+// Modbus
+#include <modbus.h>
 
 class ModBus
 {
@@ -20,6 +23,7 @@ private:
     std::vector<int> _piecePosQueue;
     std::thread _member_thread;
     modbus_t *_mb;
+    QueueWindow *queueWindow;
 
 public:
     ModBus();
