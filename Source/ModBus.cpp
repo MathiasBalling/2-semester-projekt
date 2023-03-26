@@ -42,7 +42,7 @@ ModBus::~ModBus()
 uint16_t ModBus::getX(int cellX)
 {
     // Calculate the x position of the piece
-    uint16_t val = _xCorner - 1 / 8 * _dY * cellX;
+    int val = _xCorner - (_dY * cellX) / 8;
 
     // The modbus device can't handle negative values
     // Therefore all negative values are converted to positive values and added to 2000
@@ -57,10 +57,17 @@ uint16_t ModBus::getX(int cellX)
     }
 }
 
+int ModBus::getX(int cellX, bool test)
+{
+    // Calculate the x position of the piece
+    int val = _xCorner - (_dY * cellX) / 8;
+    return val;
+}
+
 uint16_t ModBus::getY(int cellY)
 {
     // Calculate the y position of the piece
-    uint16_t val = _yCorner - 1 / 8 * _dX * cellY;
+    int val = _yCorner - (_dX * cellY) / 8;
 
     // The modbus device can't handle negative values
     // Therefore all negative values are converted to positive values and added to 2000
@@ -73,6 +80,13 @@ uint16_t ModBus::getY(int cellY)
     {
         return val;
     }
+}
+
+int ModBus::getY(int cellY, bool test)
+{
+    // Calculate the y position of the piece
+    int val = _yCorner - (_dX * cellY) / 8;
+    return val;
 }
 
 void ModBus::setXval(uint16_t val)
@@ -142,18 +156,23 @@ void ModBus::movePiece()
     using namespace std::chrono_literals;
     using namespace std::this_thread;
 
+    modbus_connect(_mb);
     while (1)
     {
         if (shouldRun())
         {
-            modbus_connect(_mb);
             printQueue();
             // Get piece position from queue
             int x = _piecePosQueue[0];
             int y = _piecePosQueue[1];
             uint16_t z = _piecePosQueue[2];
+
             // Remove piece position from queue
             _piecePosQueue.erase(_piecePosQueue.begin(), _piecePosQueue.begin() + 3);
+
+            // Remove piece from queue window
+            _queueWindow->removeFirstItem();
+
             wxLogMessage("Moving to: x=%d y:%d z:%d", x, y, z);
 
             // Load modbus with coordinates
@@ -196,12 +215,15 @@ bool ModBus::shouldRun()
     }
 }
 
-void ModBus::moveQueue(int cellX, int cellY, uint16_t z)
+void ModBus::moveQueue(const int &cellX, const int &cellY, uint16_t z, const wxString &operation, const wxString &id)
 {
     // Add piece position to queue
     _piecePosQueue.push_back(cellX);
     _piecePosQueue.push_back(cellY);
     _piecePosQueue.push_back(z);
+
+    // Add piece position to queue window
+    _queueWindow->addItem(id, operation, getX(cellX, 1), getY(cellY, 1), z);
 }
 
 void ModBus::printQueue()

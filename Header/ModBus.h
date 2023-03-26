@@ -30,6 +30,8 @@ public:
     ~ModBus();
     uint16_t getX(int cellY);
     uint16_t getY(int cellY);
+    int getX(int cellY, bool test);
+    int getY(int cellY, bool test);
     void setXval(uint16_t val);
     void setYval(uint16_t val);
     void setZval(uint16_t val);
@@ -38,7 +40,7 @@ public:
     bool isConnected();
     void movePiece();
     bool shouldRun();
-    void moveQueue(int cellX, int cellY, uint16_t z);
+    void moveQueue(const int &cellX, const int &cellY, uint16_t z, const wxString &operation, const wxString &id);
     void printQueue();
     void getDirection();
 };
