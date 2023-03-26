@@ -4,9 +4,10 @@
 ModBus::ModBus()
 {
     // Create a new window to display the queue
-    queueWindow = new QueueWindow(wxT("Queue"));
-    queueWindow->SetClientSize(wxSize(500, 500));
-    queueWindow->Show(true);
+    _queueWindow = new QueueWindow(wxT("Queue"));
+    _queueWindow->SetClientSize(wxSize(500, 700));
+    _queueWindow->SetPosition(wxPoint(0, 25));
+    _queueWindow->Show(true);
 
     // Add the ip address of the modbus device
     _mb = modbus_new_tcp("192.168.100.11", 502);
@@ -23,6 +24,19 @@ ModBus::ModBus()
         // Start a worker thread to move pieces from the queue
         _member_thread = std::thread(&ModBus::movePiece, this);
     }
+}
+
+ModBus::~ModBus()
+{
+    // Disconnect from the modbus device
+    modbus_close(_mb);
+    modbus_free(_mb);
+
+    // Stop the worker thread
+    _connected = false;
+
+    // Close the queue window
+    delete _queueWindow;
 }
 
 uint16_t ModBus::getX(int cellX)

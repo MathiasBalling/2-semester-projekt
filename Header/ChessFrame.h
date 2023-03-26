@@ -3,6 +3,8 @@
 // wxWidgets
 #include <wx/wx.h>
 
+class Board;
+
 class ChessFrame : public wxFrame
 {
 public:
@@ -12,4 +14,5 @@ public:
 private:
 	void OnAbout(wxCommandEvent &event);
 	wxLog *_logger;
+	Board *_board;
 };

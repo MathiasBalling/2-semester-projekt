@@ -23,10 +23,11 @@ private:
     std::vector<int> _piecePosQueue;
     std::thread _member_thread;
     modbus_t *_mb;
-    QueueWindow *queueWindow;
+    QueueWindow *_queueWindow;
 
 public:
     ModBus();
+    ~ModBus();
     uint16_t getX(int cellY);
     uint16_t getY(int cellY);
     void setXval(uint16_t val);

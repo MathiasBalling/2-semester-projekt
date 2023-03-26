@@ -99,26 +99,26 @@ void Piece::move(int targetX, int targetY, Board *board)
 	wxLogMessage("%s From: x=%d y=%d\tTo: x=%d y=%d", _id, _cellX, _cellY, targetX, targetY);
 
 	// Check if Modbus is connected
-	if (board->ur->isConnected())
+	if (board->mb->isConnected())
 	{
 		// Check if there's a piece in the target cell
 		if (board->isTherePiece(targetX, targetY))
 		{
 			// Take the piece from the target cell
-			board->ur->moveQueue(targetX, targetY, 200);
+			board->mb->moveQueue(targetX, targetY, 200);
 			// Then move to the position outside the board
-			board->ur->moveQueue(3, 9, 200);
+			board->mb->moveQueue(3, 9, 200);
 			// Get piece from initial cell
-			board->ur->moveQueue(_cellX, _cellY, 200);
+			board->mb->moveQueue(_cellX, _cellY, 200);
 			// Then move to the target cell
-			board->ur->moveQueue(targetX, targetY, 200);
+			board->mb->moveQueue(targetX, targetY, 200);
 		}
 		else
 		{
 			// If there's no piece in the target cell, just take the piece from the initial cell
-			board->ur->moveQueue(_cellX, _cellY, 200);
+			board->mb->moveQueue(_cellX, _cellY, 200);
 			// Then move to the target cell
-			board->ur->moveQueue(targetX, targetY, 200);
+			board->mb->moveQueue(targetX, targetY, 200);
 		}
 	}
 	else

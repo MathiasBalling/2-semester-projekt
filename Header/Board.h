@@ -14,6 +14,7 @@ class Board
 {
 public:
 	Board();
+	~Board();
 	Piece *getPieceAt(int x, int y);
 	const std::unordered_map<std::string, Piece *> &getPiecesMap();
 	Cell *getCellAt(int cellX, int cellY);
@@ -28,7 +29,7 @@ public:
 	void eraseAllIllumination();
 	void setGameFinished(bool gameFinished);
 	bool isGameFinished();
-	ModBus *ur = new ModBus();
+	ModBus *mb = new ModBus();
 
 private:
 	std::string _turn;

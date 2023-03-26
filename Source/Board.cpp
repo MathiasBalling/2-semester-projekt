@@ -15,6 +15,11 @@ Board::Board()
 	initCells();
 }
 
+Board::~Board()
+{
+	delete mb;
+}
+
 const std::unordered_map<std::string, Piece *> &Board::getPiecesMap()
 {
 	return _pieces;

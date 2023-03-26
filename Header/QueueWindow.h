@@ -7,5 +7,7 @@ class QueueWindow : public wxFrame
 {
 public:
     QueueWindow(const wxString &title);
+
+private:
     void OnClick(wxCommandEvent &event);
 };
