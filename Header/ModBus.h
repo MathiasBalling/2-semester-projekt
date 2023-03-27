@@ -18,7 +18,7 @@ class ModBus
 {
 private:
     int m_xCorner = 0, m_yCorner = -300;
-    int m_dX = 320, m_dY = 320;
+    int m_dX = 40, m_dY = 40;
     bool m_connected = false;
     std::vector<int> m_piecePosQueue;
     std::thread m_thread;
@@ -28,13 +28,11 @@ private:
 public:
     ModBus();
     ~ModBus();
-    uint16_t getX(int cellY);
-    uint16_t getY(int cellY);
-    int getX(int cellY, bool test);
-    int getY(int cellY, bool test);
-    void setXval(uint16_t val);
-    void setYval(uint16_t val);
-    void setZval(uint16_t val);
+    int getX(int cellY);
+    int getY(int cellY);
+    void setXval(int val);
+    void setYval(int val);
+    void setZval(int val);
     void setCO(uint16_t val);
     int getDO();
     bool isConnected();
