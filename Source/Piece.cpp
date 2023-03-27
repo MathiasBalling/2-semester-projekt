@@ -167,7 +167,7 @@ void Pawn::illuminatePaths(Board *board)
 					board->getCellAt(_cellX + offset.first, _cellY + offset.second)->turnOn();
 				}
 			}
-		}
+		 }
 	}
 	// Check if it's the pawn's first move
 	if ((_cellY == 6 && _color == "white" && !(board->isTherePiece(_cellX, 4))) || (_cellY == 1 && _color == "black" && !(board->isTherePiece(_cellX, 3))))
