@@ -17,13 +17,13 @@
 class ModBus
 {
 private:
-    int _xCorner = 0, _yCorner = -300;
-    int _dX = 320, _dY = 320;
-    bool _connected = false;
-    std::vector<int> _piecePosQueue;
-    std::thread _member_thread;
-    modbus_t *_mb;
-    QueueWindow *_queueWindow;
+    int m_xCorner = 0, m_yCorner = -300;
+    int m_dX = 320, m_dY = 320;
+    bool m_connected = false;
+    std::vector<int> m_piecePosQueue;
+    std::thread m_thread;
+    modbus_t *m_mb;
+    QueueWindow *m_queueWindow;
 
 public:
     ModBus();

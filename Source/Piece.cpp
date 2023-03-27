@@ -99,8 +99,7 @@ void Piece::move(int targetX, int targetY, Board *board)
 	// wxLogMessage("%s From: x=%d y=%d\tTo: x=%d y=%d", _id, _cellX, _cellY, targetX, targetY);
 
 	// Check if Modbus is connected
-	// if (board->mb->isConnected())
-	if (1)
+	if (board->mb->isConnected())
 	{
 		// Check if there's a piece in the target cell
 		if (board->isTherePiece(targetX, targetY))

@@ -12,5 +12,5 @@ public:
     void removeFirstItem();
 
 private:
-    wxListView *_list;
+    wxListView *m_list;
 };
