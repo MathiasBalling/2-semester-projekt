@@ -10,7 +10,7 @@ bool ChessApp::OnInit()
 	chessFrame->SetClientSize(wxSize(1000, 1000));
 	chessFrame->SetMinClientSize(wxSize(1000, 1000));
 	chessFrame->SetMaxClientSize(wxSize(1000, 1000));
-	chessFrame->Center();
+	chessFrame->SetPosition(wxPoint(500, 25));
 	chessFrame->Show(true);
 
 	return true;
