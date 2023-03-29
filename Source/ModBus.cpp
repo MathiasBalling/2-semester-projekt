@@ -19,14 +19,23 @@ ModBus::ModBus()
         m_connected = true;
 
         // Create a new window to display the queue
-        m_queueWindow = new QueueWindow(wxT("Queue"));
-        m_queueWindow->SetClientSize(wxSize(500, 700));
-        m_queueWindow->SetPosition(wxPoint(0, 25));
-        m_queueWindow->Show(true);
 
         // Start a worker thread to move pieces from the queue
         m_thread = std::thread(&ModBus::movePiece, this);
     }
+    int w, h;
+    wxDisplaySize(&w, &h);
+    w = w - 1000;
+    h = (h - 38) / 2;
+    m_queueWindow = new QueueWindow(wxT("Queue"));
+    m_queueWindow->SetSize(wxSize(w, h));
+    m_queueWindow->SetPosition(wxPoint(0, 38));
+    m_queueWindow->Show(true);
+
+    m_deadPieceWindow = new DeadPieceWindow(wxT("Dead Pieces"));
+    m_deadPieceWindow->SetSize(wxSize(w, h));
+    m_deadPieceWindow->SetPosition(wxPoint(0, h + 38));
+    m_deadPieceWindow->Show(true);
 }
 
 ModBus::~ModBus()
@@ -40,6 +49,7 @@ ModBus::~ModBus()
 
     // Close the queue window
     delete m_queueWindow;
+    delete m_deadPieceWindow;
 }
 
 int ModBus::getX(int cellX)
@@ -207,6 +217,11 @@ void ModBus::moveQueue(const int &cellX, const int &cellY, uint16_t z, const wxS
 
     // Add piece position to queue window
     m_queueWindow->addItem(id, operation, getX(cellX), getY(cellY), z);
+
+    if (operation == "To Outside Board")
+    {
+        setDeadPiece(cellX, cellY, id);
+    }
 }
 
 void ModBus::printQueue()
@@ -224,10 +239,6 @@ void ModBus::printQueue()
 
 void ModBus::getDirection(int xCornerBR, int yCornerBR, int xCornerBL, int yCornerBL)
 {
-    int xCornerBR, yCornerBR, xCornerBL, yCornerBL;
-
-    // Convert the values to the correct format
-
     // Set the values of the corners matching cell(0,0)
     m_xCorner = xCornerBR;
     m_yCorner = yCornerBR;
@@ -244,4 +255,14 @@ void ModBus::getDirection()
     m_dY = 40;
     m_yCorner = -300;
     m_xCorner = 0;
+}
+
+void ModBus::setDeadPiece(const int &cellX, const int &cellY, const wxString &id)
+{
+    if (id.find("B_") != -1)
+        m_deadPieceWindow->addBlack(id, getX(cellX), getY(cellY));
+    else if (id.find("W_") != -1)
+        m_deadPieceWindow->addWhite(id, getX(cellX), getY(cellY));
+    else
+        wxLogMessage("Error: Piece ID not recognized");
 }

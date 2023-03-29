@@ -2,6 +2,7 @@
 
 // Header Files
 #include "../Header/QueueWindow.h"
+#include "../Header/DeadPieceWindow.h"
 
 // Standard Libraries
 #include <vector>
@@ -24,6 +25,7 @@ private:
     std::thread m_thread;
     modbus_t *m_mb;
     QueueWindow *m_queueWindow;
+    DeadPieceWindow *m_deadPieceWindow;
 
 public:
     ModBus();
@@ -42,4 +44,5 @@ public:
     void printQueue();
     void getDirection(int xCornerBR, int yCornerBR, int xCornerBL, int yCornerBL);
     void getDirection();
+    void setDeadPiece(const int &cellX, const int &cellY, const wxString &id);
 };

@@ -7,14 +7,14 @@ ChessFrame::ChessFrame(const wxString &title)
 	: wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(1000, 1000))
 {
 	// Create a logger window
-	_logger = new wxLogWindow(this, "Chess Log", true, false);
-	wxLog::SetActiveTarget(_logger);
+	m_logger = new wxLogWindow(this, "Chess Log", true, false);
+	wxLog::SetActiveTarget(m_logger);
 
 	wxImage::AddHandler(new wxPNGHandler());
 
 	// Create the board
 	Board *board = new Board();
-	_board = board;
+	m_board = board;
 
 	// Create the panel (graphics)
 	ChessPanel *chessPanel = new ChessPanel(this, board);
@@ -38,6 +38,6 @@ void ChessFrame::OnAbout(wxCommandEvent &event)
 ChessFrame::~ChessFrame()
 {
 	wxLog::SetActiveTarget(nullptr);
-	delete _logger;
-	delete _board;
+	delete m_logger;
+	delete m_board;
 }

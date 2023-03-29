@@ -1,6 +1,6 @@
 // Header Files
 #include "../Header/Board.h"
-#include "../Header/Pieces.h"
+#include "../Header/Piece.h"
 #include "../Header/AI.h"
 
 // wxWidgets
@@ -8,7 +8,7 @@
 #include <wx/bitmap.h>
 
 Board::Board()
-	: _turn{"white"}, _gameFinished{false}
+	: m_turn{"white"}, m_gameFinished{false}
 {
 	// Initialize the pieces and cells
 	initPieces();
@@ -22,45 +22,45 @@ Board::~Board()
 
 const std::unordered_map<std::string, Piece *> &Board::getPiecesMap()
 {
-	return _pieces;
+	return m_pieces;
 }
 
 Piece *Board::getPieceAt(int cellX, int cellY)
 {
-	return _cells[cellX][cellY]->getPiece();
+	return m_cells[cellX][cellY]->getPiece();
 }
 
 Piece *Board::getSelectedPiece()
 {
-	return _selectedPiece;
+	return m_selectedPiece;
 }
 
 void Board::setSelectedPiece(Piece *piece)
 {
-	_selectedPiece = piece;
+	m_selectedPiece = piece;
 }
 
 Cell *Board::getCellAt(int cellX, int cellY)
 {
-	return _cells[cellX][cellY];
+	return m_cells[cellX][cellY];
 }
 
 std::string Board::getTurn()
 {
-	return _turn;
+	return m_turn;
 }
 
 void Board::switchTurn()
 {
 	// If the game is finished, don't switch the turn
-	if (_gameFinished)
+	if (m_gameFinished)
 		return;
 
 	// Switch the turn
-	_turn = _turn == "white" ? "black" : "white";
+	m_turn = m_turn == "white" ? "black" : "white";
 
 	// If the enemy is an AI, let it play
-	if (_turn == "black" && _enemyIsAI)
+	if (m_turn == "black" && m_enemyIsAI)
 	{
 		AI::playTurn(this);
 	}
@@ -68,13 +68,13 @@ void Board::switchTurn()
 
 void Board::setGameFinished(bool gameFinished)
 {
-	this->_gameFinished = gameFinished;
-	wxMessageBox(wxString("Game ended, " + _turn + " wins."));
+	m_gameFinished = gameFinished;
+	wxMessageBox(wxString("Game ended, " + m_turn + " wins."));
 }
 
 bool Board::isGameFinished()
 {
-	return _gameFinished;
+	return m_gameFinished;
 }
 
 void Board::eraseAllIllumination()
@@ -86,23 +86,23 @@ void Board::eraseAllIllumination()
 
 void Board::setEnemyIsAI(bool enemyIsAI)
 {
-	this->_enemyIsAI = enemyIsAI;
+	m_enemyIsAI = enemyIsAI;
 }
 
 bool Board::isThereEnemy(int cellX, int cellY)
 {
 
-	return _cells[cellX][cellY]->getPiece() != nullptr && _cells[cellX][cellY]->getPiece()->getColor() != _turn;
+	return m_cells[cellX][cellY]->getPiece() != nullptr && m_cells[cellX][cellY]->getPiece()->getColor() != m_turn;
 }
 
 bool Board::isThereAlly(int cellX, int cellY)
 {
-	return _cells[cellX][cellY]->getPiece() != nullptr && _cells[cellX][cellY]->getPiece()->getColor() == _turn;
+	return m_cells[cellX][cellY]->getPiece() != nullptr && m_cells[cellX][cellY]->getPiece()->getColor() == m_turn;
 }
 
 bool Board::isTherePiece(int cellX, int cellY)
 {
-	return _cells[cellX][cellY]->hasPiece();
+	return m_cells[cellX][cellY]->hasPiece();
 }
 
 void Board::initPieces()
@@ -112,14 +112,14 @@ void Board::initPieces()
 	{
 		wxImage image("../images/black_pawn.png");									  // Load the image of the black pawn
 		Piece *pawn = new Pawn(x, 1, wxBitmap(image), "B_Pawn_" + std::to_string(x)); // Create the black pawns
-		_pieces[pawn->getId()] = pawn;												  // Add the pawn to the map
+		m_pieces[pawn->getId()] = pawn;												  // Add the pawn to the map
 	}
 	// Inititialize white pawns
 	for (int x = 0; x < 8; x++)
 	{
 		wxImage image("../images/white_pawn.png");									  // Load the image of the white pawn
 		Piece *pawn = new Pawn(x, 6, wxBitmap(image), "W_Pawn_" + std::to_string(x)); // Create the white pawns
-		_pieces[pawn->getId()] = pawn;												  // Add the pawn to the map
+		m_pieces[pawn->getId()] = pawn;												  // Add the pawn to the map
 	}
 	// Initialize the other pieces
 	std::string ids[] = {"Rook_0", "Knight_0", "Bishop_0", "Queen", "King", "Bishop_1", "Knight_1", "Rook_1"};
@@ -156,7 +156,7 @@ void Board::initPieces()
 				imageName += "_queen.png"; // Set the image name
 				piece = new Queen(x, color == "W" ? 7 : 0, wxBitmap(wxImage("../images/" + imageName)), color + "_" + ids[x]);
 			}
-			_pieces[piece->getId()] = piece;
+			m_pieces[piece->getId()] = piece;
 		}
 	}
 }
@@ -167,18 +167,18 @@ void Board::initCells()
 	// Make vector of empty cells
 	for (int i = 0; i < 8; i++)
 	{
-		_cells.push_back(empty);
+		m_cells.push_back(empty);
 		for (int j = 0; j < 8; j++)
-			_cells[i][j] = new Cell();
+			m_cells[i][j] = new Cell();
 	}
 
 	// Add the pieces to the cells
-	for (auto &it : _pieces)
+	for (auto &it : m_pieces)
 	{
 		Piece *piece = it.second;
 		int x = piece->getCellX();
 		int y = piece->getCellY();
-		_cells[x][y] = new Cell();
-		_cells[x][y]->setPiece(piece);
+		m_cells[x][y] = new Cell();
+		m_cells[x][y]->setPiece(piece);
 	}
 }

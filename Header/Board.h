@@ -32,12 +32,12 @@ public:
 	ModBus *mb = new ModBus();
 
 private:
-	std::string _turn;
-	std::unordered_map<std::string, Piece *> _pieces;
-	std::vector<std::vector<Cell *>> _cells;
-	Piece *_selectedPiece;
-	bool _enemyIsAI = false;
-	bool _gameFinished;
+	std::string m_turn;
+	std::unordered_map<std::string, Piece *> m_pieces;
+	std::vector<std::vector<Cell *>> m_cells;
+	Piece *m_selectedPiece;
+	bool m_enemyIsAI = false;
+	bool m_gameFinished;
 	void initPieces();
 	void initCells();
 };

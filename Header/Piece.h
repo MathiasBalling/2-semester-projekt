@@ -24,11 +24,11 @@ public:
 	void setAlive(bool isAlive);
 
 protected:
-	int _cellX, _cellY;
-	std::string _id;
-	wxBitmap _image;
-	std::string _color;
-	bool _alive;
+	int m_cellX, m_cellY;
+	std::string m_id;
+	wxBitmap m_image;
+	std::string m_color;
+	bool m_alive;
 };
 
 class Pawn : public Piece

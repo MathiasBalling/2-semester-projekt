@@ -2,7 +2,7 @@
 
 // Header Files
 #include "../Header/Board.h"
-#include "../Header/Pieces.h"
+#include "../Header/Piece.h"
 
 // wxWidgets
 #include <wx/wx.h>
@@ -19,6 +19,6 @@ private:
 	void clearBuffer(wxGraphicsContext *gc);
 	void drawBoard(wxGraphicsContext *gc);
 	void drawPieces(wxGraphicsContext *gc);
-	Board *_board;
-	bool _enemySelected;
+	Board *m_board;
+	bool m_enemySelected;
 };

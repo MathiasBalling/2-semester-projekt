@@ -13,6 +13,6 @@ public:
 
 private:
 	void OnAbout(wxCommandEvent &event);
-	wxLog *_logger;
-	Board *_board;
+	wxLog *m_logger;
+	Board *m_board;
 };

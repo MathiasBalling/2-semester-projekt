@@ -2,36 +2,36 @@
 #include "../Header/Cell.h"
 
 Cell::Cell()
-	: _illuminated(false), _piece(nullptr)
+	: m_illuminated(false), m_piece(nullptr)
 {
 }
 
 Piece *Cell::getPiece()
 {
-	return _piece;
+	return m_piece;
 }
 
 bool Cell::isIlluminated()
 {
-	return _illuminated;
+	return m_illuminated;
 }
 
 void Cell::setPiece(Piece *piece)
 {
-	this->_piece = piece;
+	m_piece = piece;
 }
 
 void Cell::turnOff()
 {
-	_illuminated = false;
+	m_illuminated = false;
 }
 
 void Cell::turnOn()
 {
-	_illuminated = true;
+	m_illuminated = true;
 }
 
 bool Cell::hasPiece()
 {
-	return _piece != nullptr;
+	return m_piece != nullptr;
 }

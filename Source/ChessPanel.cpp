@@ -6,7 +6,7 @@
 
 ChessPanel::ChessPanel(wxFrame *parent, Board *board)
 	: wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE),
-	  _board(board), _enemySelected(false)
+	  m_board(board), m_enemySelected(false)
 {
 	wxWindow::SetBackgroundStyle(wxBG_STYLE_PAINT);
 	Connect(wxEVT_PAINT, wxPaintEventHandler(ChessPanel::OnPaint));
@@ -39,7 +39,7 @@ void ChessPanel::clearBuffer(wxGraphicsContext *gc)
 void ChessPanel::OnLeftMouseDown(wxMouseEvent &event)
 {
 	// Check if game is finished
-	if (_board->isGameFinished())
+	if (m_board->isGameFinished())
 		return;
 
 	// Get the mouse position
@@ -54,33 +54,33 @@ void ChessPanel::OnLeftMouseDown(wxMouseEvent &event)
 	int cellY = (int)(pos.y / cellLenY);
 
 	// Get the selected cell
-	Cell *selectedCell = _board->getCellAt(cellX, cellY);
+	Cell *selectedCell = m_board->getCellAt(cellX, cellY);
 
 	// Set selected cell if there is ally
 	// Or override the selected cell with another ally cell
-	if (_board->isThereAlly(cellX, cellY))
+	if (m_board->isThereAlly(cellX, cellY))
 	{
-		_board->eraseAllIllumination();
+		m_board->eraseAllIllumination();
 		auto piece = selectedCell->getPiece();
-		piece->illuminatePaths(_board);
-		_board->setSelectedPiece(piece);
+		piece->illuminatePaths(m_board);
+		m_board->setSelectedPiece(piece);
 		wxPanel::Refresh();
 	}
 	// Check if selected cell is movable to selected cell
 	else if (selectedCell->isIlluminated())
 	{
 		// Move there
-		_board->getSelectedPiece()->move(cellX, cellY, _board);
-		_board->eraseAllIllumination();
-		_board->setSelectedPiece(nullptr);
-		_board->switchTurn();
+		m_board->getSelectedPiece()->move(cellX, cellY, m_board);
+		m_board->eraseAllIllumination();
+		m_board->setSelectedPiece(nullptr);
+		m_board->switchTurn();
 		wxPanel::Refresh();
 	}
 	// Clicked on non movable cell
 	else
 	{
-		_board->eraseAllIllumination();
-		_board->setSelectedPiece(nullptr);
+		m_board->eraseAllIllumination();
+		m_board->setSelectedPiece(nullptr);
 		wxPanel::Refresh();
 	}
 }
@@ -104,12 +104,12 @@ void ChessPanel::drawBoard(wxGraphicsContext *gc)
 			else
 				gc->SetBrush(wxBrush(black));
 			gc->DrawRectangle(x * cellLenX, y * cellLenY, cellLenX, cellLenY);
-			if (_board->getCellAt(x, y)->isIlluminated())
+			if (m_board->getCellAt(x, y)->isIlluminated())
 			{
 				gc->SetBrush(wxBrush(grey));
 				gc->DrawEllipse(x * cellLenX + cellLenX / 4, y * cellLenY + cellLenY / 4, cellLenX / 2, cellLenY / 2);
 			}
-			if (_board->getSelectedPiece() == _board->getCellAt(x, y)->getPiece() && _board->getSelectedPiece())
+			if (m_board->getSelectedPiece() == m_board->getCellAt(x, y)->getPiece() && m_board->getSelectedPiece())
 			{
 				gc->SetBrush(wxBrush(yellow));
 				gc->DrawRectangle(x * cellLenX, y * cellLenY, cellLenX, cellLenY);
@@ -121,7 +121,7 @@ void ChessPanel::drawPieces(wxGraphicsContext *gc)
 {
 	const int cellLenX = GetClientSize().GetWidth() / 8;
 	const int cellLenY = GetClientSize().GetHeight() / 8;
-	auto piecesMap = _board->getPiecesMap();
+	auto piecesMap = m_board->getPiecesMap();
 
 	for (auto &it : piecesMap)
 	{
