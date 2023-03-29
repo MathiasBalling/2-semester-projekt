@@ -17,8 +17,8 @@
 class ModBus
 {
 private:
-    int m_xCorner = 0, m_yCorner = -300;
-    int m_dX = 40, m_dY = 40;
+    int m_xCorner, m_yCorner;
+    int m_dX, m_dY;
     bool m_connected = false;
     std::vector<int> m_piecePosQueue;
     std::thread m_thread;
@@ -40,5 +40,6 @@ public:
     bool shouldRun();
     void moveQueue(const int &cellX, const int &cellY, uint16_t z, const wxString &operation, const wxString &id);
     void printQueue();
+    void getDirection(int xCornerBR, int yCornerBR, int xCornerBL, int yCornerBL);
     void getDirection();
 };

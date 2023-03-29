@@ -3,6 +3,7 @@
 
 ModBus::ModBus()
 {
+    getDirection();
 
     // Add the ip address of the modbus device
     m_mb = modbus_new_tcp("192.168.100.11", 502);
@@ -221,63 +222,26 @@ void ModBus::printQueue()
     }
 }
 
+void ModBus::getDirection(int xCornerBR, int yCornerBR, int xCornerBL, int yCornerBL)
+{
+    int xCornerBR, yCornerBR, xCornerBL, yCornerBL;
+
+    // Convert the values to the correct format
+
+    // Set the values of the corners matching cell(0,0)
+    m_xCorner = xCornerBR;
+    m_yCorner = yCornerBR;
+
+    // Calculate the difference between the corners
+    m_dX = (xCornerBL - xCornerBR) / 8;
+    m_dY = (yCornerBR - yCornerBL) / 8;
+    wxLogMessage("xCorner: %d yCorner: %d dX: %d dY: %d", m_xCorner, m_yCorner, m_dX, m_dY);
+}
+
 void ModBus::getDirection()
 {
-    uint16_t val[4];
-    int msg = modbus_read_registers(m_mb, 131, 4, val);
-    if (msg == -1)
-    {
-        wxLogMessage("Modbus: Counldn't get starting postition!");
-        return;
-    }
-    else
-    {
-        int xCornerBR, yCornerBR, xCornerBL, yCornerBL;
-
-        // Convert the values to the correct format
-        if (val[0] > 2000)
-        {
-            xCornerBR = val[0] * -1 + 2000;
-        }
-        else
-        {
-            xCornerBR = val[0];
-        }
-
-        if (val[1] > 2000)
-        {
-            yCornerBR = val[1] * -1 + 2000;
-        }
-        else
-        {
-            yCornerBR = val[1];
-        }
-
-        if (val[2] > 2000)
-        {
-            xCornerBL = val[2] * -1 + 2000;
-        }
-        else
-        {
-            xCornerBL = val[2];
-        }
-
-        if (val[3] > 2000)
-        {
-            yCornerBL = val[3] * -1 + 2000;
-        }
-        else
-        {
-            yCornerBL = val[3];
-        }
-
-        // Set the values of the corners matching cell(0,0)
-        m_xCorner = xCornerBR;
-        m_yCorner = yCornerBR;
-
-        // Calculate the difference between the corners
-        m_dX = (xCornerBL - xCornerBR)/8;
-        m_dY = (yCornerBR - yCornerBL)/8;
-        wxLogMessage("xCorner: %d yCorner: %d dX: %d dY: %d", m_xCorner, m_yCorner, m_dX, m_dY);
-    }
+    m_dX = 40;
+    m_dY = 40;
+    m_yCorner = -300;
+    m_xCorner = 0;
 }
