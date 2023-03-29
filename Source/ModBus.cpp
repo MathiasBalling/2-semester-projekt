@@ -25,9 +25,9 @@ ModBus::ModBus()
     }
     int w, h;
     wxDisplaySize(&w, &h);
-    w = w - 1000;
+    w = w - (h - 38 - 30);
     h = (h - 38) / 2;
-    m_queueWindow = new QueueWindow(wxT("Queue"));
+    m_queueWindow = new QueueWindow(wxT("Move Queue"));
     m_queueWindow->SetSize(wxSize(w, h));
     m_queueWindow->SetPosition(wxPoint(0, 38));
     m_queueWindow->Show(true);

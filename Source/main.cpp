@@ -6,11 +6,14 @@ IMPLEMENT_APP(ChessApp)
 
 bool ChessApp::OnInit()
 {
+	int w, h;
+	wxDisplaySize(&w, &h);
+	h = h - 38 - 30;
 	ChessFrame *chessFrame = new ChessFrame(wxT("NBNP - Chess"));
-	chessFrame->SetClientSize(wxSize(1000, 1000));
-	chessFrame->SetMinClientSize(wxSize(1000, 1000));
-	chessFrame->SetMaxClientSize(wxSize(1000, 1000));
-	chessFrame->SetPosition(wxPoint(728, 38));
+	chessFrame->SetClientSize(wxSize(h, h));
+	chessFrame->SetMinClientSize(wxSize(h, h));
+	chessFrame->SetMaxClientSize(wxSize(h, h));
+	chessFrame->SetPosition(wxPoint(w - h, 38));
 	chessFrame->Show(true);
 
 	return true;

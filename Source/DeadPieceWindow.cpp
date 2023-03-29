@@ -5,7 +5,7 @@ DeadPieceWindow::DeadPieceWindow(const wxString &title)
 {
     int w, h;
     wxDisplaySize(&w, &h);
-    w = (w - 1000) / 2;
+    w = (w - (h - 38 - 30)) / 2;
     // Create the panel for white
     wxPanel *whitePanel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(w, -1));
     // Create the listview

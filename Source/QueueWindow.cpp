@@ -18,7 +18,7 @@ QueueWindow::QueueWindow(const wxString &title)
 
     int w, h;
     wxDisplaySize(&w, &h);
-    w = w - 1000;
+    w = w - (h - 38 - 30);
     // Set the column width
     m_queuelist->SetColumnWidth(0, w * 0.2);
     m_queuelist->SetColumnWidth(1, w * 0.3);
