@@ -95,12 +95,9 @@ void Piece::move(int targetX, int targetY, Board *board)
 		if (board->getPieceAt(targetX, targetY)->getId().find("King") != std::string::npos)
 			board->setGameFinished(true);
 	}
-	// Send coordinates to the log
-	// wxLogMessage("%s From: x=%d y=%d\tTo: x=%d y=%d", m_id, m_cellX, m_cellY, targetX, targetY);
 
 	// Check if Modbus is connected
-	//if (board->mb->isConnected())
-	if (1)
+	if (board->mb->isConnected())
 	{
 		// Check if there's a piece in the target cell
 		if (board->isTherePiece(targetX, targetY))
