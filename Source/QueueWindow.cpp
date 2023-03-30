@@ -9,7 +9,7 @@ QueueWindow::QueueWindow(const wxString &title)
     // Create the listview
     m_queuelist = new wxListView(panel);
 
-    // Add
+    // Add columns
     m_queuelist->AppendColumn("ID");
     m_queuelist->AppendColumn("Operation");
     m_queuelist->AppendColumn("X-coordinate");
