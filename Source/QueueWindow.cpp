@@ -16,6 +16,7 @@ QueueWindow::QueueWindow(const wxString &title)
     m_queuelist->AppendColumn("Y-coordinate");
     m_queuelist->AppendColumn("Z-coordinate");
 
+    // Get display size
     int w, h;
     wxDisplaySize(&w, &h);
     w = w - (h - 38 - 30);
@@ -26,9 +27,11 @@ QueueWindow::QueueWindow(const wxString &title)
     m_queuelist->SetColumnWidth(3, w / 6);
     m_queuelist->SetColumnWidth(4, w / 6);
 
+    // Add header text
     wxStaticText *text = new wxStaticText(panel, wxID_ANY, "Moves in queue", wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE_HORIZONTAL);
     text->SetFont(wxFont(18, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
 
+    // Add sizer
     wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
     sizer->Add(text, 0, wxEXPAND | wxALL, 5);
     sizer->Add(m_queuelist, 1, wxEXPAND);
@@ -38,6 +41,7 @@ QueueWindow::QueueWindow(const wxString &title)
 
 void QueueWindow::addItem(const wxString &id, const wxString &op, const int &cellX, const int &cellY, const int &z)
 {
+    // Add moves to queue
     int index = m_queuelist->GetItemCount();
     m_queuelist->InsertItem(index, id);
     m_queuelist->SetItem(index, 1, op);
