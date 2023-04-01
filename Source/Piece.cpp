@@ -165,10 +165,10 @@ void Pawn::illuminatePaths(Board *board)
 					board->getCellAt(m_cellX + offset.first, m_cellY + offset.second)->turnOn();
 				}
 			}
-		 }
+		}
 	}
 	// Check if it's the pawn's first move
-	if ((m_cellY == 6 && m_color == "white" && !(board->isTherePiece(m_cellX, 4))) || (m_cellY == 1 && m_color == "black" && !(board->isTherePiece(m_cellX, 3))))
+	if ((m_cellY == 6 && m_color == "white" && !(board->isTherePiece(m_cellX, 4)) && !(board->isTherePiece(m_cellX, 5))) || (m_cellY == 1 && m_color == "black" && !(board->isTherePiece(m_cellX, 3)) && !(board->isTherePiece(m_cellX, 2))))
 		board->getCellAt(m_cellX, m_cellY - 2 * sign)->turnOn();
 }
 Rook::Rook(int cellX, int cellY, wxBitmap image, std::string id)

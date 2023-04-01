@@ -29,10 +29,10 @@ void ChessPanel::OnPaint(wxPaintEvent &event)
 
 void ChessPanel::clearBuffer(wxGraphicsContext *gc)
 {
-	const wxColor white = wxColor(235, 236, 209);
+	const wxColor light = wxColor(235, 236, 209);
 
 	gc->SetPen(*wxTRANSPARENT_PEN);
-	gc->SetBrush(wxBrush(white));
+	gc->SetBrush(wxBrush(light));
 	gc->DrawRectangle(0, 0, GetClientSize().GetWidth(), GetClientSize().GetHeight());
 }
 
@@ -87,8 +87,8 @@ void ChessPanel::OnLeftMouseDown(wxMouseEvent &event)
 
 void ChessPanel::drawBoard(wxGraphicsContext *gc)
 {
-	const wxColor white = wxColor(235, 236, 209);
-	const wxColor black = wxColor(189, 118, 71);
+	const wxColor light = wxColor(235, 236, 209);
+	const wxColor dark = wxColor(189, 118, 71);
 	const wxColor grey = wxColor(80, 80, 80, 150);
 	const wxColor yellow = wxColor(255, 255, 0, 100);
 	gc->SetPen(*wxTRANSPARENT_PEN);
@@ -100,15 +100,26 @@ void ChessPanel::drawBoard(wxGraphicsContext *gc)
 		for (int x = 0; x < 8; x++)
 		{
 			if ((x + y) % 2 == 0)
-				gc->SetBrush(wxBrush(white));
+				gc->SetBrush(wxBrush(light));
 			else
-				gc->SetBrush(wxBrush(black));
+				gc->SetBrush(wxBrush(dark));
 			gc->DrawRectangle(x * cellLenX, y * cellLenY, cellLenX, cellLenY);
 			if (m_board->getCellAt(x, y)->isIlluminated())
 			{
-				gc->SetBrush(wxBrush(grey));
-				gc->DrawEllipse(x * cellLenX + cellLenX / 4, y * cellLenY + cellLenY / 4, cellLenX / 2, cellLenY / 2);
+				if (m_board->isThereEnemy(x, y))
+				{
+					gc->SetPen(wxPen(*wxWHITE, 6));
+					gc->SetBrush(*wxTRANSPARENT_BRUSH);
+					gc->DrawRectangle(x * cellLenX + 3, y * cellLenY + 3, cellLenX - 6, cellLenY - 6);
+					gc->SetPen(*wxTRANSPARENT_PEN);
+				}
+				else
+				{
+					gc->SetBrush(wxBrush(grey));
+					gc->DrawEllipse(x * cellLenX + cellLenX / 4, y * cellLenY + cellLenY / 4, cellLenX / 2, cellLenY / 2);
+				}
 			}
+
 			if (m_board->getSelectedPiece() == m_board->getCellAt(x, y)->getPiece() && m_board->getSelectedPiece())
 			{
 				gc->SetBrush(wxBrush(yellow));

@@ -3,7 +3,7 @@
 
 ModBus::ModBus()
 {
-    getDirection();
+    getDirection(0, -300, 320, -300);
 
     // Add the ip address of the modbus device
     m_mb = modbus_new_tcp("192.168.100.11", 502);
@@ -18,10 +18,9 @@ ModBus::ModBus()
         wxLogMessage("Modbus: Connection Successful!");
         m_connected = true;
 
-
         // Start a worker thread to move pieces from the queue
         m_thread = std::thread(&ModBus::movePiece, this);
-        
+
         // Create a new window to display the queue
         int w, h;
         wxDisplaySize(&w, &h);
@@ -247,17 +246,12 @@ void ModBus::getDirection(int xCornerBR, int yCornerBR, int xCornerBL, int yCorn
     // Calculate the difference between the corners
     m_dX = (xCornerBL - xCornerBR) / 8;
     m_dY = (yCornerBR - yCornerBL) / 8;
+    if (m_dX == 0)
+        m_dX = 40;
+    if (m_dY == 0)
+        m_dY = 40;
     wxLogMessage("xCorner: %d yCorner: %d dX: %d dY: %d", m_xCorner, m_yCorner, m_dX, m_dY);
 }
-
-void ModBus::getDirection()
-{
-    m_dX = 40;
-    m_dY = 40;
-    m_yCorner = -300;
-    m_xCorner = 0;
-}
-
 void ModBus::setDeadPiece(const int &cellX, const int &cellY, const wxString &id)
 {
     if (id.find("B_") != -1)

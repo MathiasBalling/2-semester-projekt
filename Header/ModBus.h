@@ -43,6 +43,5 @@ public:
     void moveQueue(const int &cellX, const int &cellY, uint16_t z, const wxString &operation, const wxString &id);
     void printQueue();
     void getDirection(int xCornerBR, int yCornerBR, int xCornerBL, int yCornerBL);
-    void getDirection();
     void setDeadPiece(const int &cellX, const int &cellY, const wxString &id);
 };
