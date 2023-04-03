@@ -20,22 +20,21 @@ ModBus::ModBus()
 
         // Start a worker thread to move pieces from the queue
         m_thread = std::thread(&ModBus::movePiece, this);
-
-        // Create a new window to display the queue
-        int w, h;
-        wxDisplaySize(&w, &h);
-        w = w - (h - 38 - 30);
-        h = (h - 38) / 2;
-        m_queueWindow = new QueueWindow(wxT("Move Queue"));
-        m_queueWindow->SetSize(wxSize(w, h));
-        m_queueWindow->SetPosition(wxPoint(0, 38));
-        m_queueWindow->Show(true);
-
-        m_deadPieceWindow = new DeadPieceWindow(wxT("Dead Pieces"));
-        m_deadPieceWindow->SetSize(wxSize(w, h));
-        m_deadPieceWindow->SetPosition(wxPoint(0, h + 38));
-        m_deadPieceWindow->Show(true);
     }
+    // Create a new window to display the queue
+    int w, h;
+    wxDisplaySize(&w, &h);
+    w = w - (h - 38 - 30);
+    h = (h - 38) / 2;
+    m_queueWindow = new QueueWindow(wxT("Move Queue"));
+    m_queueWindow->SetSize(wxSize(w, h));
+    m_queueWindow->SetPosition(wxPoint(0, 38));
+    m_queueWindow->Show(true);
+
+    m_deadPieceWindow = new DeadPieceWindow(wxT("Dead Pieces"));
+    m_deadPieceWindow->SetSize(wxSize(w, h));
+    m_deadPieceWindow->SetPosition(wxPoint(0, h + 38));
+    m_deadPieceWindow->Show(true);
 }
 
 ModBus::~ModBus()

@@ -95,36 +95,26 @@ void Piece::move(int targetX, int targetY, Board *board)
 		if (board->getPieceAt(targetX, targetY)->getId().find("King") != std::string::npos)
 			board->setGameFinished(true);
 	}
-
-	// Check if Modbus is connected
-	if (board->mb->isConnected())
+	// Check if there's a piece in the target cell
+	if (board->isTherePiece(targetX, targetY))
 	{
-		// Check if there's a piece in the target cell
-		if (board->isTherePiece(targetX, targetY))
-		{
-			std::string tempid = board->getPieceAt(targetX, targetY)->getId();
-			// Take the piece from the target cell
-			board->mb->moveQueue(targetX, targetY, 200, "Take dead piece", tempid);
-			// Then move to the position outside the board
-			board->mb->moveQueue(3, 9, 200, "To Outside Board", tempid);
-			// Get piece from initial cell
-			board->mb->moveQueue(m_cellX, m_cellY, 200, "From", m_id);
-			// Then move to the target cell
-			board->mb->moveQueue(targetX, targetY, 200, "To", m_id);
-		}
-		else
-		{
-			// If there's no piece in the target cell, just take the piece from the initial cell
-			board->mb->moveQueue(m_cellX, m_cellY, 200, "From", m_id);
-			// Then move to the target cell
-			board->mb->moveQueue(targetX, targetY, 200, "To", m_id);
-		}
+		std::string tempid = board->getPieceAt(targetX, targetY)->getId();
+		// Take the piece from the target cell
+		board->mb->moveQueue(targetX, targetY, 200, "Take dead piece", tempid);
+		// Then move to the position outside the board
+		board->mb->moveQueue(3, 9, 200, "To Outside Board", tempid);
+		// Get piece from initial cell
+		board->mb->moveQueue(m_cellX, m_cellY, 200, "From", m_id);
+		// Then move to the target cell
+		board->mb->moveQueue(targetX, targetY, 200, "To", m_id);
 	}
 	else
 	{
-		wxLogMessage("Can't send coordinates to UR5!");
+		// If there's no piece in the target cell, just take the piece from the initial cell
+		board->mb->moveQueue(m_cellX, m_cellY, 200, "From", m_id);
+		// Then move to the target cell
+		board->mb->moveQueue(targetX, targetY, 200, "To", m_id);
 	}
-
 	// Move piece on the board
 	board->getCellAt(m_cellX, m_cellY)->setPiece(nullptr);
 	m_cellX = targetX;
