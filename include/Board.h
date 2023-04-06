@@ -7,8 +7,8 @@
 #include <unordered_map>
 
 // Header Files
-#include "../Header/ModBus.h"
-#include "../Header/Cell.h"
+#include "ModBus.h"
+#include "Cell.h"
 
 class Board
 {

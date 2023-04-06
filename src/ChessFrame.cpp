@@ -1,7 +1,7 @@
 // Header Files
-#include "../Header/ChessFrame.h"
-#include "../Header/ChessPanel.h"
-#include "../Header/Board.h"
+#include "ChessFrame.h"
+#include "ChessPanel.h"
+#include "Board.h"
 
 ChessFrame::ChessFrame(const wxString &title)
 	: wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(1000, 1000))

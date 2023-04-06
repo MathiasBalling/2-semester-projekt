@@ -1,8 +1,8 @@
 #pragma once
 
 // Header Files
-#include "../Header/QueueWindow.h"
-#include "../Header/DeadPieceWindow.h"
+#include "QueueWindow.h"
+#include "DeadPieceWindow.h"
 
 // Standard Libraries
 #include <vector>

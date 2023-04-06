@@ -1,7 +1,7 @@
 // Header Files
-#include "../Header/Board.h"
-#include "../Header/Piece.h"
-#include "../Header/AI.h"
+#include "Board.h"
+#include "Piece.h"
+#include "AI.h"
 
 // wxWidgets
 #include <wx/msgdlg.h>

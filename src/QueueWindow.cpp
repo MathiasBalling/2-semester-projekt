@@ -1,4 +1,4 @@
-#include "../Header/QueueWindow.h"
+#include "QueueWindow.h"
 
 QueueWindow::QueueWindow(const wxString &title)
     : wxFrame(nullptr, wxID_ANY, title, wxDefaultPosition, wxDefaultSize)

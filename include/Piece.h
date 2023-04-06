@@ -4,7 +4,7 @@
 #include <wx/wx.h>
 
 // Header Files
-#include "../Header/ChessFrame.h"
+#include "ChessFrame.h"
 
 class Board;
 

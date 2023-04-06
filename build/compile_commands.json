@@ -1,0 +1,62 @@
+[
+{
+  "directory": "/Users/mathiaschristiansen/Documents/2-semester-projekt/build",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DWXUSINGDLL -D_FILE_OFFSET_BITS=64 -D__WXMAC__ -D__WXOSX_COCOA__ -D__WXOSX__ -I/Users/mathiaschristiansen/Documents/2-semester-projekt/include -isystem /opt/homebrew/lib/wx/include/osx_cocoa-unicode-3.2 -isystem /opt/homebrew/include/wx-3.2 -std=gnu++11 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -o CMakeFiles/drawing.dir/src/AI.cpp.o -c /Users/mathiaschristiansen/Documents/2-semester-projekt/src/AI.cpp",
+  "file": "/Users/mathiaschristiansen/Documents/2-semester-projekt/src/AI.cpp",
+  "output": "CMakeFiles/drawing.dir/src/AI.cpp.o"
+},
+{
+  "directory": "/Users/mathiaschristiansen/Documents/2-semester-projekt/build",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DWXUSINGDLL -D_FILE_OFFSET_BITS=64 -D__WXMAC__ -D__WXOSX_COCOA__ -D__WXOSX__ -I/Users/mathiaschristiansen/Documents/2-semester-projekt/include -isystem /opt/homebrew/lib/wx/include/osx_cocoa-unicode-3.2 -isystem /opt/homebrew/include/wx-3.2 -std=gnu++11 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -o CMakeFiles/drawing.dir/src/Board.cpp.o -c /Users/mathiaschristiansen/Documents/2-semester-projekt/src/Board.cpp",
+  "file": "/Users/mathiaschristiansen/Documents/2-semester-projekt/src/Board.cpp",
+  "output": "CMakeFiles/drawing.dir/src/Board.cpp.o"
+},
+{
+  "directory": "/Users/mathiaschristiansen/Documents/2-semester-projekt/build",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DWXUSINGDLL -D_FILE_OFFSET_BITS=64 -D__WXMAC__ -D__WXOSX_COCOA__ -D__WXOSX__ -I/Users/mathiaschristiansen/Documents/2-semester-projekt/include -isystem /opt/homebrew/lib/wx/include/osx_cocoa-unicode-3.2 -isystem /opt/homebrew/include/wx-3.2 -std=gnu++11 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -o CMakeFiles/drawing.dir/src/Cell.cpp.o -c /Users/mathiaschristiansen/Documents/2-semester-projekt/src/Cell.cpp",
+  "file": "/Users/mathiaschristiansen/Documents/2-semester-projekt/src/Cell.cpp",
+  "output": "CMakeFiles/drawing.dir/src/Cell.cpp.o"
+},
+{
+  "directory": "/Users/mathiaschristiansen/Documents/2-semester-projekt/build",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DWXUSINGDLL -D_FILE_OFFSET_BITS=64 -D__WXMAC__ -D__WXOSX_COCOA__ -D__WXOSX__ -I/Users/mathiaschristiansen/Documents/2-semester-projekt/include -isystem /opt/homebrew/lib/wx/include/osx_cocoa-unicode-3.2 -isystem /opt/homebrew/include/wx-3.2 -std=gnu++11 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -o CMakeFiles/drawing.dir/src/ChessFrame.cpp.o -c /Users/mathiaschristiansen/Documents/2-semester-projekt/src/ChessFrame.cpp",
+  "file": "/Users/mathiaschristiansen/Documents/2-semester-projekt/src/ChessFrame.cpp",
+  "output": "CMakeFiles/drawing.dir/src/ChessFrame.cpp.o"
+},
+{
+  "directory": "/Users/mathiaschristiansen/Documents/2-semester-projekt/build",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DWXUSINGDLL -D_FILE_OFFSET_BITS=64 -D__WXMAC__ -D__WXOSX_COCOA__ -D__WXOSX__ -I/Users/mathiaschristiansen/Documents/2-semester-projekt/include -isystem /opt/homebrew/lib/wx/include/osx_cocoa-unicode-3.2 -isystem /opt/homebrew/include/wx-3.2 -std=gnu++11 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -o CMakeFiles/drawing.dir/src/ChessPanel.cpp.o -c /Users/mathiaschristiansen/Documents/2-semester-projekt/src/ChessPanel.cpp",
+  "file": "/Users/mathiaschristiansen/Documents/2-semester-projekt/src/ChessPanel.cpp",
+  "output": "CMakeFiles/drawing.dir/src/ChessPanel.cpp.o"
+},
+{
+  "directory": "/Users/mathiaschristiansen/Documents/2-semester-projekt/build",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DWXUSINGDLL -D_FILE_OFFSET_BITS=64 -D__WXMAC__ -D__WXOSX_COCOA__ -D__WXOSX__ -I/Users/mathiaschristiansen/Documents/2-semester-projekt/include -isystem /opt/homebrew/lib/wx/include/osx_cocoa-unicode-3.2 -isystem /opt/homebrew/include/wx-3.2 -std=gnu++11 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -o CMakeFiles/drawing.dir/src/DeadPieceWindow.cpp.o -c /Users/mathiaschristiansen/Documents/2-semester-projekt/src/DeadPieceWindow.cpp",
+  "file": "/Users/mathiaschristiansen/Documents/2-semester-projekt/src/DeadPieceWindow.cpp",
+  "output": "CMakeFiles/drawing.dir/src/DeadPieceWindow.cpp.o"
+},
+{
+  "directory": "/Users/mathiaschristiansen/Documents/2-semester-projekt/build",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DWXUSINGDLL -D_FILE_OFFSET_BITS=64 -D__WXMAC__ -D__WXOSX_COCOA__ -D__WXOSX__ -I/Users/mathiaschristiansen/Documents/2-semester-projekt/include -isystem /opt/homebrew/lib/wx/include/osx_cocoa-unicode-3.2 -isystem /opt/homebrew/include/wx-3.2 -std=gnu++11 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -o CMakeFiles/drawing.dir/src/ModBus.cpp.o -c /Users/mathiaschristiansen/Documents/2-semester-projekt/src/ModBus.cpp",
+  "file": "/Users/mathiaschristiansen/Documents/2-semester-projekt/src/ModBus.cpp",
+  "output": "CMakeFiles/drawing.dir/src/ModBus.cpp.o"
+},
+{
+  "directory": "/Users/mathiaschristiansen/Documents/2-semester-projekt/build",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DWXUSINGDLL -D_FILE_OFFSET_BITS=64 -D__WXMAC__ -D__WXOSX_COCOA__ -D__WXOSX__ -I/Users/mathiaschristiansen/Documents/2-semester-projekt/include -isystem /opt/homebrew/lib/wx/include/osx_cocoa-unicode-3.2 -isystem /opt/homebrew/include/wx-3.2 -std=gnu++11 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -o CMakeFiles/drawing.dir/src/Piece.cpp.o -c /Users/mathiaschristiansen/Documents/2-semester-projekt/src/Piece.cpp",
+  "file": "/Users/mathiaschristiansen/Documents/2-semester-projekt/src/Piece.cpp",
+  "output": "CMakeFiles/drawing.dir/src/Piece.cpp.o"
+},
+{
+  "directory": "/Users/mathiaschristiansen/Documents/2-semester-projekt/build",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DWXUSINGDLL -D_FILE_OFFSET_BITS=64 -D__WXMAC__ -D__WXOSX_COCOA__ -D__WXOSX__ -I/Users/mathiaschristiansen/Documents/2-semester-projekt/include -isystem /opt/homebrew/lib/wx/include/osx_cocoa-unicode-3.2 -isystem /opt/homebrew/include/wx-3.2 -std=gnu++11 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -o CMakeFiles/drawing.dir/src/QueueWindow.cpp.o -c /Users/mathiaschristiansen/Documents/2-semester-projekt/src/QueueWindow.cpp",
+  "file": "/Users/mathiaschristiansen/Documents/2-semester-projekt/src/QueueWindow.cpp",
+  "output": "CMakeFiles/drawing.dir/src/QueueWindow.cpp.o"
+},
+{
+  "directory": "/Users/mathiaschristiansen/Documents/2-semester-projekt/build",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -DWXUSINGDLL -D_FILE_OFFSET_BITS=64 -D__WXMAC__ -D__WXOSX_COCOA__ -D__WXOSX__ -I/Users/mathiaschristiansen/Documents/2-semester-projekt/include -isystem /opt/homebrew/lib/wx/include/osx_cocoa-unicode-3.2 -isystem /opt/homebrew/include/wx-3.2 -std=gnu++11 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -o CMakeFiles/drawing.dir/src/main.cpp.o -c /Users/mathiaschristiansen/Documents/2-semester-projekt/src/main.cpp",
+  "file": "/Users/mathiaschristiansen/Documents/2-semester-projekt/src/main.cpp",
+  "output": "CMakeFiles/drawing.dir/src/main.cpp.o"
+}
+]

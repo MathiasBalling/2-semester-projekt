@@ -1,6 +1,6 @@
 // Header Files
-#include "../Header/Piece.h"
-#include "../Header/Board.h"
+#include "Piece.h"
+#include "Board.h"
 
 // wxWidgets
 #include <wx/bitmap.h>

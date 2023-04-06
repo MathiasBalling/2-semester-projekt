@@ -1,5 +1,5 @@
 // Header Files
-#include "../Header/Cell.h"
+#include "Cell.h"
 
 Cell::Cell()
 	: m_illuminated(false), m_piece(nullptr)

@@ -1,4 +1,4 @@
-#include "../Header/DeadPieceWindow.h"
+#include "DeadPieceWindow.h"
 
 DeadPieceWindow::DeadPieceWindow(const wxString &title)
     : wxFrame(nullptr, wxID_ANY, title, wxDefaultPosition, wxDefaultSize)

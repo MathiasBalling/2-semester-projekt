@@ -1,8 +1,8 @@
 #pragma once
 
 // Header Files
-#include "../Header/Board.h"
-#include "../Header/Piece.h"
+#include "Board.h"
+#include "Piece.h"
 
 // wxWidgets
 #include <wx/wx.h>

@@ -1,7 +1,7 @@
 #pragma once
 
 // Header Files
-#include "../Header/Piece.h"
+#include "Piece.h"
 
 class Cell
 {
