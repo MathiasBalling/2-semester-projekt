@@ -1,3 +1,0 @@
-/Users/mathiaschristiansen/Documents/2-semester-projekt/build/CMakeFiles/drawing.dir
-/Users/mathiaschristiansen/Documents/2-semester-projekt/build/CMakeFiles/edit_cache.dir
-/Users/mathiaschristiansen/Documents/2-semester-projekt/build/CMakeFiles/rebuild_cache.dir
