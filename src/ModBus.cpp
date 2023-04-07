@@ -21,16 +21,11 @@ ModBus::ModBus() {
   int w, h;
   wxDisplaySize(&w, &h);
   w = w - (h - 38 - 30);
-  h = (h - 38) / 2;
-  m_queueWindow = new QueueWindow(wxT("Move Queue"));
-  m_queueWindow->SetSize(wxSize(w, h));
-  m_queueWindow->SetPosition(wxPoint(0, 38));
-  m_queueWindow->Show(true);
-
-  m_deadPieceWindow = new DeadPieceWindow(wxT("Dead Pieces"));
-  m_deadPieceWindow->SetSize(wxSize(w, h));
-  m_deadPieceWindow->SetPosition(wxPoint(0, h + 38));
-  m_deadPieceWindow->Show(true);
+  h = h - 38;
+  m_controlWindow = new ControlWindow(wxT("Control Window"));
+  m_controlWindow->SetSize(wxSize(w, h));
+  m_controlWindow->SetPosition(wxPoint(0, 38));
+  m_controlWindow->Show(true);
 }
 
 ModBus::~ModBus() {
@@ -42,8 +37,7 @@ ModBus::~ModBus() {
   m_connected = false;
 
   // Close the queue window
-  delete m_queueWindow;
-  delete m_deadPieceWindow;
+  delete m_controlWindow;
 }
 
 int ModBus::getX(int cellX) {
@@ -136,7 +130,7 @@ void ModBus::movePiece() {
                             m_piecePosQueue.begin() + 3);
 
       // Remove piece from queue window
-      m_queueWindow->removeFirstItem();
+      m_controlWindow->removeFirstItem();
 
       wxLogMessage("Moving to: x=%d y:%d z:%d", x, y, z);
 
@@ -181,7 +175,7 @@ void ModBus::moveQueue(const int &cellX, const int &cellY, uint16_t z,
   m_piecePosQueue.push_back(z);
 
   // Add piece position to queue window
-  m_queueWindow->addItem(id, operation, getX(cellX), getY(cellY), z);
+  m_controlWindow->addItem(id, operation, getX(cellX), getY(cellY), z);
 
   if (operation == "To Outside Board") {
     setDeadPiece(cellX, cellY, id);
@@ -218,9 +212,9 @@ void ModBus::getDirection(int xCornerBR, int yCornerBR, int xCornerBL,
 void ModBus::setDeadPiece(const int &cellX, const int &cellY,
                           const wxString &id) {
   if (id.find("B_") != -1)
-    m_deadPieceWindow->addBlack(id, getX(cellX), getY(cellY));
+    m_controlWindow->addBlack(id, getX(cellX), getY(cellY));
   else if (id.find("W_") != -1)
-    m_deadPieceWindow->addWhite(id, getX(cellX), getY(cellY));
+    m_controlWindow->addWhite(id, getX(cellX), getY(cellY));
   else
     wxLogMessage("Error: Piece ID not recognized");
 }

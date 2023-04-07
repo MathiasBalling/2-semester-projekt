@@ -1,8 +1,7 @@
 #pragma once
 
 // Header Files
-#include "DeadPieceWindow.h"
-#include "QueueWindow.h"
+#include "ControlWindow.h"
 
 // Standard Libraries
 #include <chrono>
@@ -23,8 +22,7 @@ private:
   std::vector<int> m_piecePosQueue;
   std::thread m_thread;
   modbus_t *m_mb;
-  QueueWindow *m_queueWindow;
-  DeadPieceWindow *m_deadPieceWindow;
+  ControlWindow *m_controlWindow;
 
 public:
   ModBus();
