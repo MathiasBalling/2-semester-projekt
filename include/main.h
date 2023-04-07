@@ -3,8 +3,7 @@
 // wxWidgets
 #include <wx/wx.h>
 
-class ChessApp : public wxApp
-{
+class ChessApp : public wxApp {
 public:
-	virtual bool OnInit();
+  virtual bool OnInit();
 };

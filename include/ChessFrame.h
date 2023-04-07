@@ -5,14 +5,13 @@
 
 class Board;
 
-class ChessFrame : public wxFrame
-{
+class ChessFrame : public wxFrame {
 public:
-	ChessFrame(const wxString &title);
-	~ChessFrame();
+  ChessFrame(const wxString &title);
+  ~ChessFrame();
 
 private:
-	void OnAbout(wxCommandEvent &event);
-	wxLog *m_logger;
-	Board *m_board;
+  void OnAbout(wxCommandEvent &event);
+  wxLog *m_logger;
+  Board *m_board;
 };

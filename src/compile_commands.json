@@ -1,0 +1,94 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/clang++",
+      "-std=c++17",
+      "-Wno-deprecated-enum-enum-conversion",
+      "-O2",
+      "-I/opt/homebrew/lib/wx/include/osx_cocoa-unicode-3.2",
+      "-I/opt/homebrew/include/wx-3.2",
+      "-D_FILE_OFFSET_BITS=64",
+      "-DWXUSINGDLL",
+      "-D__WXMAC__",
+      "-D__WXOSX__",
+      "-D__WXOSX_COCOA__",
+      "-I/opt/homebrew/Cellar/libmodbus/3.1.10/include/modbus",
+      "-c",
+      "-o",
+      "ModBus.o",
+      "ModBus.cpp"
+    ],
+    "directory": "/Users/mathiaschristiansen/Documents/2-semester-projekt/src",
+    "file": "/Users/mathiaschristiansen/Documents/2-semester-projekt/src/ModBus.cpp",
+    "output": "/Users/mathiaschristiansen/Documents/2-semester-projekt/src/ModBus.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang++",
+      "-std=c++17",
+      "-Wno-deprecated-enum-enum-conversion",
+      "-O2",
+      "-I/opt/homebrew/lib/wx/include/osx_cocoa-unicode-3.2",
+      "-I/opt/homebrew/include/wx-3.2",
+      "-D_FILE_OFFSET_BITS=64",
+      "-DWXUSINGDLL",
+      "-D__WXMAC__",
+      "-D__WXOSX__",
+      "-D__WXOSX_COCOA__",
+      "-I/opt/homebrew/Cellar/libmodbus/3.1.10/include/modbus",
+      "-c",
+      "-o",
+      "Piece.o",
+      "Piece.cpp"
+    ],
+    "directory": "/Users/mathiaschristiansen/Documents/2-semester-projekt/src",
+    "file": "/Users/mathiaschristiansen/Documents/2-semester-projekt/src/Piece.cpp",
+    "output": "/Users/mathiaschristiansen/Documents/2-semester-projekt/src/Piece.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang++",
+      "-std=c++17",
+      "-Wno-deprecated-enum-enum-conversion",
+      "-O2",
+      "-I/opt/homebrew/lib/wx/include/osx_cocoa-unicode-3.2",
+      "-I/opt/homebrew/include/wx-3.2",
+      "-D_FILE_OFFSET_BITS=64",
+      "-DWXUSINGDLL",
+      "-D__WXMAC__",
+      "-D__WXOSX__",
+      "-D__WXOSX_COCOA__",
+      "-I/opt/homebrew/Cellar/libmodbus/3.1.10/include/modbus",
+      "-c",
+      "-o",
+      "QueueWindow.o",
+      "QueueWindow.cpp"
+    ],
+    "directory": "/Users/mathiaschristiansen/Documents/2-semester-projekt/src",
+    "file": "/Users/mathiaschristiansen/Documents/2-semester-projekt/src/QueueWindow.cpp",
+    "output": "/Users/mathiaschristiansen/Documents/2-semester-projekt/src/QueueWindow.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang++",
+      "-std=c++17",
+      "-Wno-deprecated-enum-enum-conversion",
+      "-O2",
+      "-I/opt/homebrew/lib/wx/include/osx_cocoa-unicode-3.2",
+      "-I/opt/homebrew/include/wx-3.2",
+      "-D_FILE_OFFSET_BITS=64",
+      "-DWXUSINGDLL",
+      "-D__WXMAC__",
+      "-D__WXOSX__",
+      "-D__WXOSX_COCOA__",
+      "-I/opt/homebrew/Cellar/libmodbus/3.1.10/include/modbus",
+      "-c",
+      "-o",
+      "main.o",
+      "main.cpp"
+    ],
+    "directory": "/Users/mathiaschristiansen/Documents/2-semester-projekt/src",
+    "file": "/Users/mathiaschristiansen/Documents/2-semester-projekt/src/main.cpp",
+    "output": "/Users/mathiaschristiansen/Documents/2-semester-projekt/src/main.o"
+  }
+]

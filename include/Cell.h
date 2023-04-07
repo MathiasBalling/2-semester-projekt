@@ -3,18 +3,17 @@
 // Header Files
 #include "Piece.h"
 
-class Cell
-{
+class Cell {
 public:
-	Cell();
-	bool isIlluminated();
-	void turnOff();
-	void turnOn();
-	Piece *getPiece();
-	void setPiece(Piece *piece);
-	bool hasPiece();
+  Cell();
+  bool isIlluminated();
+  void turnOff();
+  void turnOn();
+  Piece *getPiece();
+  void setPiece(Piece *piece);
+  bool hasPiece();
 
 private:
-	Piece *m_piece;
-	bool m_illuminated;
+  Piece *m_piece;
+  bool m_illuminated;
 };
