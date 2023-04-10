@@ -1,5 +1,5 @@
 // Header Files
-#include "../include/AI.h"
+#include "AI.h"
 
 // Standard Libraries - for rand() and srand()
 #include <cstdlib>

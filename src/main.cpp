@@ -1,6 +1,6 @@
 // Header Files
-#include "../include/main.h"
-#include "../include/ChessFrame.h"
+#include "main.h"
+#include "ChessFrame.h"
 
 IMPLEMENT_APP(ChessApp)
 

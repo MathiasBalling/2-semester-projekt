@@ -1,7 +1,7 @@
 // Header Files
-#include "../include/Board.h"
-#include "../include/AI.h"
-#include "../include/Piece.h"
+#include "Board.h"
+#include "AI.h"
+#include "Piece.h"
 
 // wxWidgets
 #include <wx/bitmap.h>

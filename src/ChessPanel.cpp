@@ -1,5 +1,5 @@
 // Header Files
-#include "../include/ChessPanel.h"
+#include "ChessPanel.h"
 
 // wxWidgets
 #include <wx/dcbuffer.h>
