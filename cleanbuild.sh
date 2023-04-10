@@ -1,7 +1,9 @@
 #!/bin/bash
 dir="$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
-cd "$dir/build"
+cd "$dir"
+mkdir -p build
+cd build
 rm -r ./**
-cmake -S .. -B .
+cmake .. 
 cmake --build .
 ./NBNP-Chess
