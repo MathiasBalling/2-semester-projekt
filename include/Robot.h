@@ -14,7 +14,7 @@
 // Modbus
 #include <modbus.h>
 
-class ModBus {
+class Robot {
 private:
   int m_xCorner, m_yCorner;
   int m_dX, m_dY;
@@ -25,10 +25,9 @@ private:
   ControlWindow *m_controlWindow;
 
 public:
-  ModBus();
-  ~ModBus();
-  int getX(int cellY);
-  int getY(int cellY);
+  Robot();
+  ~Robot();
+  std::pair<int, int> getXY(const int &cellX, const int &cellY);
   void setXval(int val);
   void setYval(int val);
   void setZval(int val);

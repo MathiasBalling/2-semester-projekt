@@ -28,7 +28,7 @@ public:
   void eraseAllIllumination();
   void setGameFinished(bool gameFinished);
   bool isGameFinished();
-  ModBus *mb = new ModBus();
+  Robot *mb = new Robot();
 
 private:
   std::string m_turn;
