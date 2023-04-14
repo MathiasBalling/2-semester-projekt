@@ -1,6 +1,6 @@
 // Header Files
-#include "../include/Piece.h"
-#include "../include/Board.h"
+#include "Piece.h"
+#include "Board.h"
 
 // wxWidgets
 #include <wx/bitmap.h>
@@ -34,6 +34,10 @@ std::string Piece::getColor() { return m_color; }
 bool Piece::isAlive() { return m_alive; }
 
 void Piece::setAlive(bool isAlive) { m_alive = isAlive; }
+
+void Piece::setValue(int value) { m_value = value; }
+
+int Piece::getValue() { return m_value; }
 
 bool Piece::canMove(Board *board) {
   //

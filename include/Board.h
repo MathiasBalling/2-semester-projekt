@@ -8,7 +8,7 @@
 
 // Header Files
 #include "Cell.h"
-#include "ModBus.h"
+#include "Robot.h"
 
 class Board {
 public:
@@ -28,14 +28,14 @@ public:
   void eraseAllIllumination();
   void setGameFinished(bool gameFinished);
   bool isGameFinished();
-  ModBus *mb = new ModBus();
+  Robot *mb = new Robot();
 
 private:
   std::string m_turn;
   std::unordered_map<std::string, Piece *> m_pieces;
   std::vector<std::vector<Cell *>> m_cells;
   Piece *m_selectedPiece;
-  bool m_enemyIsAI = false;
+  bool m_enemyIsAI = true;
   bool m_gameFinished;
   void initPieces();
   void initCells();

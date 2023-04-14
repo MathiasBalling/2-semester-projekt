@@ -1,8 +1,8 @@
 // Header Files
-#include "../include/ModBus.h"
+#include "Robot.h"
 
-ModBus::ModBus() {
-  getDirection(0, -300, 320, -300);
+Robot::Robot() {
+  getDirection(-103, -405, 162, -295);
 
   // Add the ip address of the modbus device
   m_mb = modbus_new_tcp("192.168.100.11", 502);
@@ -15,96 +15,81 @@ ModBus::ModBus() {
     m_connected = true;
 
     // Start a worker thread to move pieces from the queue
-    m_thread = std::thread(&ModBus::movePiece, this);
+    m_thread = std::thread(&Robot::movePiece, this);
   }
   // Create a new window to display the queue
   int w, h;
   wxDisplaySize(&w, &h);
   w = w - (h - 38 - 30);
-  h = (h - 38) / 2;
-  m_queueWindow = new QueueWindow(wxT("Move Queue"));
-  m_queueWindow->SetSize(wxSize(w, h));
-  m_queueWindow->SetPosition(wxPoint(0, 38));
-  m_queueWindow->Show(true);
-
-  m_deadPieceWindow = new DeadPieceWindow(wxT("Dead Pieces"));
-  m_deadPieceWindow->SetSize(wxSize(w, h));
-  m_deadPieceWindow->SetPosition(wxPoint(0, h + 38));
-  m_deadPieceWindow->Show(true);
+  h = h - 38;
+  m_controlWindow = new ControlWindow(wxT("Control Window"));
+  m_controlWindow->SetSize(wxSize(w, h));
+  m_controlWindow->SetPosition(wxPoint(0, 38));
+  m_controlWindow->Show(true);
 }
 
-ModBus::~ModBus() {
+Robot::~Robot() {
   // Disconnect from the modbus device
-  modbus_close(m_mb);
   modbus_free(m_mb);
 
   // Stop the worker thread
   m_connected = false;
 
   // Close the queue window
-  delete m_queueWindow;
-  delete m_deadPieceWindow;
+  delete m_controlWindow;
 }
 
-int ModBus::getX(int cellX) {
-  // Calculate the x position of the piece
-  int val = m_xCorner + (m_dY * cellX);
-  return val;
-}
-
-int ModBus::getY(int cellY) {
-  // Calculate the y position of the piece
-  int val = m_yCorner - (m_dX * cellY);
-  return val;
-}
-
-void ModBus::setXval(int val) {
+void Robot::setXval(int val) {
   if (val < 0) {
     val = val * -1 + 2000;
   }
-  modbus_connect(m_mb);
+  // modbus_connect(m_mb);
   // Write the x position to the modbus device
   int msg = modbus_write_register(m_mb, 128, val);
   if (msg == -1) {
     wxLogMessage("Modbus: Counldn't set x!");
   }
+  // modbus_close(m_mb);
 }
 
-void ModBus::setYval(int val) {
+void Robot::setYval(int val) {
   if (val < 0) {
     val = val * -1 + 2000;
   }
-  modbus_connect(m_mb);
+  // modbus_connect(m_mb);
   // Write the y position to the modbus device
   int msg = modbus_write_register(m_mb, 129, val);
   if (msg == -1) {
     wxLogMessage("Modbus: Counldn't set y!");
   }
+  // modbus_close(m_mb);
 }
 
-void ModBus::setZval(int val) {
+void Robot::setZval(int val) {
   if (val < 0) {
     val = val * -1 + 2000;
   }
-  modbus_connect(m_mb);
+  // modbus_connect(m_mb);
   // Write the z position to the modbus device
   int msg = modbus_write_register(m_mb, 130, val);
   if (msg == -1) {
     wxLogMessage("Modbus: Counldn't set z!");
   }
+  // modbus_close(m_mb);
 }
 
-void ModBus::setCO(uint16_t val) {
-  modbus_connect(m_mb);
+void Robot::setCO(uint16_t val) {
+  // modbus_connect(m_mb);
   // Write the configurable output to the modbus device
   int msg = modbus_write_register(m_mb, 31, val);
   if (msg == -1) {
     wxLogMessage("Modbus: Counldn't set Digital Output!");
   }
+  // modbus_close(m_mb);
 }
 
-int ModBus::getDO() {
-  modbus_connect(m_mb);
+int Robot::getDO() {
+  // modbus_connect(m_mb);
   // Read the digital output from the modbus device
   uint16_t val;
   int msg = modbus_read_registers(m_mb, 1, 1, &val);
@@ -114,17 +99,18 @@ int ModBus::getDO() {
   } else {
     return val;
   }
+  // modbus_close(m_mb);
 }
 
-bool ModBus::isConnected() { return m_connected; }
+bool Robot::isConnected() { return m_connected; }
 
-void ModBus::movePiece() {
+void Robot::movePiece() {
   // To stop the thread for a specific amount of time
   using namespace std::chrono_literals;
   using namespace std::this_thread;
 
-  modbus_connect(m_mb);
-  while (1) {
+  // modbus_connect(m_mb);
+  while (m_connected) {
     if (shouldRun()) {
       // Get piece position from queue
       int x = m_piecePosQueue[0];
@@ -136,13 +122,13 @@ void ModBus::movePiece() {
                             m_piecePosQueue.begin() + 3);
 
       // Remove piece from queue window
-      m_queueWindow->removeFirstItem();
+      m_controlWindow->removeFirstItem();
 
       wxLogMessage("Moving to: x=%d y:%d z:%d", x, y, z);
 
       // Load modbus with coordinates
-      setXval(getX(x));
-      setYval(getY(y));
+      setXval(getXY(x, y).first);
+      setYval(getXY(x, y).second);
       setZval(z);
       sleep_for(100ms);
       setCO(1);            // Tells the UR5 to load the coordinates and move
@@ -162,9 +148,10 @@ void ModBus::movePiece() {
       sleep_for(5s);
     }
   }
+  // modbus_close(m_mb);
 }
 
-bool ModBus::shouldRun() {
+bool Robot::shouldRun() {
   // Check if queue has at least 3 elements (x, y, z)
   if (m_piecePosQueue.size() < 3) {
     return false;
@@ -173,54 +160,49 @@ bool ModBus::shouldRun() {
   }
 }
 
-void ModBus::moveQueue(const int &cellX, const int &cellY, uint16_t z,
-                       const wxString &operation, const wxString &id) {
+void Robot::moveQueue(const int &cellX, const int &cellY, uint16_t z,
+                      const wxString &operation, const wxString &id) {
   // Add piece position to queue
   m_piecePosQueue.push_back(cellX);
   m_piecePosQueue.push_back(cellY);
   m_piecePosQueue.push_back(z);
 
   // Add piece position to queue window
-  m_queueWindow->addItem(id, operation, getX(cellX), getY(cellY), z);
+
+  m_controlWindow->addItem(id, operation, getXY(cellX, cellY).first,
+                           getXY(cellX, cellY).second, z);
 
   if (operation == "To Outside Board") {
     setDeadPiece(cellX, cellY, id);
   }
 }
 
-void ModBus::printQueue() {
-  if (m_piecePosQueue.empty()) {
-    wxLogMessage("Queue is empty");
-    return;
-  }
-  for (int i = 0, pos = 0; i <= m_piecePosQueue.size() - 3; i += 3, pos++) {
-    wxLogMessage("Pos:%d x:%d y:%d z:%d", pos, m_piecePosQueue[i],
-                 m_piecePosQueue[i + 1], m_piecePosQueue[i + 2]);
-  }
-}
-
-void ModBus::getDirection(int xCornerBR, int yCornerBR, int xCornerBL,
-                          int yCornerBL) {
+void Robot::getDirection(int xCornerBR, int yCornerBR, int xCornerBL,
+                         int yCornerBL) {
   // Set the values of the corners matching cell(0,0)
   m_xCorner = xCornerBR;
   m_yCorner = yCornerBR;
 
   // Calculate the difference between the corners
-  m_dX = (xCornerBL - xCornerBR) / 8;
+  m_dX = (xCornerBR - xCornerBL) / 8;
   m_dY = (yCornerBR - yCornerBL) / 8;
-  if (m_dX == 0)
-    m_dX = 40;
-  if (m_dY == 0)
-    m_dY = 40;
   wxLogMessage("xCorner: %d yCorner: %d dX: %d dY: %d", m_xCorner, m_yCorner,
                m_dX, m_dY);
 }
-void ModBus::setDeadPiece(const int &cellX, const int &cellY,
-                          const wxString &id) {
+void Robot::setDeadPiece(const int &cellX, const int &cellY,
+                         const wxString &id) {
   if (id.find("B_") != -1)
-    m_deadPieceWindow->addBlack(id, getX(cellX), getY(cellY));
+    m_controlWindow->addBlack(id, getXY(cellX, cellY).first,
+                              getXY(cellX, cellY).second);
   else if (id.find("W_") != -1)
-    m_deadPieceWindow->addWhite(id, getX(cellX), getY(cellY));
+    m_controlWindow->addWhite(id, getXY(cellX, cellY).first,
+                              getXY(cellX, cellY).second);
   else
     wxLogMessage("Error: Piece ID not recognized");
+}
+
+std::pair<int, int> Robot::getXY(const int &cellX, const int &cellY) {
+  int xVal = m_xCorner - (cellX * m_dX) - (cellY * m_dY);
+  int yVal = m_yCorner + (cellY * m_dX) - (cellX * m_dY);
+  return std::make_pair(xVal, yVal);
 }
