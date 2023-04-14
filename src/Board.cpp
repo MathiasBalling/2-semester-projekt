@@ -84,6 +84,7 @@ void Board::initPieces() {
         new Pawn(x, 1, wxBitmap(image),
                  "B_Pawn_" + std::to_string(x)); // Create the black pawns
     m_pieces[pawn->getId()] = pawn;              // Add the pawn to the map
+    pawn->setValue(10);
   }
   // Inititialize white pawns
   for (int x = 0; x < 8; x++) {
@@ -93,6 +94,7 @@ void Board::initPieces() {
         new Pawn(x, 6, wxBitmap(image),
                  "W_Pawn_" + std::to_string(x)); // Create the white pawns
     m_pieces[pawn->getId()] = pawn;              // Add the pawn to the map
+    pawn->setValue(10);
   }
   // Initialize the other pieces
   std::string ids[] = {"Rook_0", "Knight_0", "Bishop_0", "Queen",
@@ -111,6 +113,7 @@ void Board::initPieces() {
         piece = new Rook(x, color == "W" ? 7 : 0,
                          wxBitmap(wxImage("../images/" + imageName)),
                          color + "_" + ids[x]);
+        piece->setValue(50);
         break;
       case 'K': // If the id starts with K, it's a knight or a king
         if (ids[x][1] == 'i') {
@@ -118,11 +121,13 @@ void Board::initPieces() {
           piece = new King(x, color == "W" ? 7 : 0,
                            wxBitmap(wxImage("../images/" + imageName)),
                            color + "_" + ids[x]);
+        piece->setValue(900);
         } else {
           imageName += "_knight.png"; // Set the image name
           piece = new Knight(x, color == "W" ? 7 : 0,
                              wxBitmap(wxImage("../images/" + imageName)),
                              color + "_" + ids[x]);
+        piece->setValue(30);
         }
         break;
       case 'B':                     // If the id starts with B, it's a bishop
@@ -130,12 +135,14 @@ void Board::initPieces() {
         piece = new Bishop(x, color == "W" ? 7 : 0,
                            wxBitmap(wxImage("../images/" + imageName)),
                            color + "_" + ids[x]);
+        piece->setValue(30);
         break;
       case 'Q':                    // If the id starts with Q, it's a queen
         imageName += "_queen.png"; // Set the image name
         piece = new Queen(x, color == "W" ? 7 : 0,
                           wxBitmap(wxImage("../images/" + imageName)),
                           color + "_" + ids[x]);
+        piece->setValue(90);
       }
       m_pieces[piece->getId()] = piece;
     }

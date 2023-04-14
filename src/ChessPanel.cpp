@@ -106,9 +106,9 @@ void ChessPanel::drawBoard(wxGraphicsContext *gc) {
           gc->SetPen(*wxTRANSPARENT_PEN);
         } else {
           gc->SetBrush(wxBrush(grey));
-          gc->DrawEllipse(x * cellLenX + cellLenX / 4,
-                          y * cellLenY + cellLenY / 4, cellLenX / 2,
-                          cellLenY / 2);
+          gc->DrawEllipse(x * cellLenX + cellLenX * 0.25,
+                          y * cellLenY + cellLenY * 0.25, cellLenX * 0.5,
+                          cellLenY * 0.5);
         }
       }
 
@@ -128,12 +128,11 @@ void ChessPanel::drawPieces(wxGraphicsContext *gc) {
   for (auto &it : piecesMap) {
     Piece *piece = it.second;
     if (piece->isAlive()) {
-      const int cellPosX = piece->getCellX() * cellLenX +
-                           (cellLenX / 2 - (piece->getImage().GetWidth()) / 2);
-      const int cellPosY = piece->getCellY() * cellLenY +
-                           (cellLenY / 2 - (piece->getImage().GetHeight()) / 2);
-      const int imageSizeX = piece->getImage().GetWidth();
-      const int imageSizeY = piece->getImage().GetHeight();
+      int dim = cellLenX < cellLenY ? cellLenX : cellLenY;
+      const int cellPosX = piece->getCellX() * cellLenX + (0.5*cellLenX - 0.4 * dim);
+      const int cellPosY = piece->getCellY() * cellLenY + (0.5*cellLenY - 0.4 * dim);
+      const int imageSizeX=dim*0.8;
+      const int imageSizeY=dim*0.8;
       gc->DrawBitmap(piece->getImage(), cellPosX, cellPosY, imageSizeX,
                      imageSizeY);
     }

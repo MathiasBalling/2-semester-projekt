@@ -21,8 +21,11 @@ public:
   void move(int targetX, int targetY, Board *board);
   bool isAlive();
   void setAlive(bool isAlive);
+  void setValue(int value);
+  int getValue();
 
 protected:
+  int m_value;
   int m_cellX, m_cellY;
   std::string m_id;
   wxBitmap m_image;

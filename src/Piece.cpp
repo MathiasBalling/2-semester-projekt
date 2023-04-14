@@ -35,6 +35,10 @@ bool Piece::isAlive() { return m_alive; }
 
 void Piece::setAlive(bool isAlive) { m_alive = isAlive; }
 
+void Piece::setValue(int value) { m_value = value; }
+
+int Piece::getValue() { return m_value; }
+
 bool Piece::canMove(Board *board) {
   //
   illuminatePaths(board);

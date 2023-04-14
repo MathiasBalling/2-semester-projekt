@@ -172,17 +172,6 @@ void Robot::moveQueue(const int &cellX, const int &cellY, uint16_t z,
   }
 }
 
-void Robot::printQueue() {
-  if (m_piecePosQueue.empty()) {
-    wxLogMessage("Queue is empty");
-    return;
-  }
-  for (int i = 0, pos = 0; i <= m_piecePosQueue.size() - 3; i += 3, pos++) {
-    wxLogMessage("Pos:%d x:%d y:%d z:%d", pos, m_piecePosQueue[i],
-                 m_piecePosQueue[i + 1], m_piecePosQueue[i + 2]);
-  }
-}
-
 void Robot::getDirection(int xCornerBR, int yCornerBR, int xCornerBL,
                          int yCornerBL) {
   // Set the values of the corners matching cell(0,0)

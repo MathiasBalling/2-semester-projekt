@@ -9,4 +9,7 @@ public:
 
 private:
   static Piece *chooseRandomPiece(Board *board);
+  static void evaluateBoard(Board *board);
+  static int whiteValue;
+  static int blackValue;
 };

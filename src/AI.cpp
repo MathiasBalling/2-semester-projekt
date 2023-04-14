@@ -1,13 +1,12 @@
 // Header Files
 #include "AI.h"
+#include "wx/wx.h"
 
 // Standard Libraries - for rand() and srand()
 #include <cstdlib>
 #include <time.h>
 
 Piece *AI::chooseRandomPiece(Board *board) {
-  // Set the rand() to depend on the time
-  srand(time(0));
   int myAlivePiecesCount = 0;
 
   // Count the number of pieces that can move
@@ -17,6 +16,9 @@ Piece *AI::chooseRandomPiece(Board *board) {
                           id_piece.second->canMove(board);
 
   // Choose a random piece
+
+  // Set the rand() to depend on the time
+  srand(time(0));
   int count = rand() % myAlivePiecesCount + 1;
   for (auto id_piece : board->getPiecesMap()) {
     count -= id_piece.second->isAlive() &&
@@ -28,9 +30,26 @@ Piece *AI::chooseRandomPiece(Board *board) {
   return nullptr;
 }
 
+void AI::evaluateBoard(Board *board) {
+  int whiteValue = 0;
+  int blackValue = 0;
+
+  // Count the number of pieces that can move
+  for (auto id_piece : board->getPiecesMap()) {
+    if (id_piece.second->isAlive()) {
+      if (id_piece.second->getColor() == "white")
+        whiteValue += id_piece.second->getValue();
+      else
+        blackValue += id_piece.second->getValue();
+    }
+  }
+  wxLogMessage("White: %d, Black: %d", whiteValue, blackValue); 
+}
+
 void AI::playTurn(Board *board) {
   // Recive a random piece and illuminate its paths (the paths are the possible
   // moves)
+  evaluateBoard(board);
   Piece *chosenPiece = chooseRandomPiece(board);
   chosenPiece->illuminatePaths(board);
 
