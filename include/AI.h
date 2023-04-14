@@ -8,8 +8,6 @@ public:
   static void playTurn(Board *board);
 
 private:
-  static Piece *chooseRandomPiece(Board *board);
+  static void chooseRandomMove(Board *board);
   static void evaluateBoard(Board *board);
-  static int whiteValue;
-  static int blackValue;
 };
