@@ -121,13 +121,13 @@ void Board::initPieces() {
           piece = new King(x, color == "W" ? 7 : 0,
                            wxBitmap(wxImage("../images/" + imageName)),
                            color + "_" + ids[x]);
-        piece->setValue(900);
+          piece->setValue(900);
         } else {
           imageName += "_knight.png"; // Set the image name
           piece = new Knight(x, color == "W" ? 7 : 0,
                              wxBitmap(wxImage("../images/" + imageName)),
                              color + "_" + ids[x]);
-        piece->setValue(30);
+          piece->setValue(30);
         }
         break;
       case 'B':                     // If the id starts with B, it's a bishop
@@ -154,8 +154,10 @@ void Board::initCells() {
   // Make vector of empty cells
   for (int i = 0; i < 8; i++) {
     m_cells.push_back(empty);
-    for (int j = 0; j < 8; j++)
+    for (int j = 0; j < 8; j++) {
       m_cells[i][j] = new Cell();
+      m_cells[i][j]->setPos(i, j);
+    }
   }
 
   // Add the pieces to the cells

@@ -14,3 +14,11 @@ void Cell::turnOff() { m_illuminated = false; }
 void Cell::turnOn() { m_illuminated = true; }
 
 bool Cell::hasPiece() { return m_piece != nullptr; }
+
+void Cell::setPos(int cellX, int cellY) {
+  m_cellX = cellX;
+  m_cellY = cellY;
+}
+
+int Cell::getCellX() { return m_cellX; }
+int Cell::getCellY() { return m_cellY; }
