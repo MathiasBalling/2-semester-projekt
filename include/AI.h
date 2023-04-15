@@ -11,6 +11,6 @@ public:
 private:
   static std::pair<Cell *, Piece *> chooseRandomMove(Board *board);
   static int evaluateBoard(Board *board);
-  static std::pair<std::pair<Cell *, Piece *>, int>
-  minimax(Board *board, int depth, bool isMaximizing);
+    static std::pair<Cell* , Piece*> bestmove(Board *board);
+  static int minimax(Board *board, int depth, bool isMaximizing);
 };
