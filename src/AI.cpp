@@ -191,3 +191,15 @@ std::pair<std::pair<Cell *, Piece *>, int> AI::minimax(Board *board, int depth,
     return std::make_pair(bestMove, minValue);
   }
 }
+
+std::pair<Cell* , Piece*> AI::bestmove(Board *board){
+std::vector<std::pair<Cell *, Piece *>> initialBoard;
+  for (int x = 0; x < 8; x++) {
+    for (int y = 0; y < 8; y++) {
+      initialBoard.push_back(
+          std::make_pair(board->getCellAt(x, y), board->getPieceAt(x, y)));
+    }
+  }
+
+}
+
