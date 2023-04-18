@@ -8,53 +8,18 @@
 #include <time.h>
 #include <utility>
 
-std::pair<Cell *, Piece *> AI::chooseRandomMove(Board *board) {
-  int myAlivePiecesCount = 0;
+void AI::playTurn(Board *board) {
+  // Choose the best move
+  auto bestmove = bestMove(board);
 
-  // Count the number of pieces that can move
-  for (auto id_piece : board->getPiecesMap())
-    myAlivePiecesCount += id_piece.second->isAlive() &&
-                          id_piece.second->getColor() == board->getTurn() &&
-                          id_piece.second->canMove(board);
-
-  // Set the rand() to depend on the time
-  srand(time(0));
-  // int randNum = rand()%(max-min + 1) + min;
-  int count = rand() % myAlivePiecesCount + 1;
-  for (auto id_piece : board->getPiecesMap()) {
-    count -= id_piece.second->isAlive() &&
-             id_piece.second->getColor() == board->getTurn() &&
-             id_piece.second->canMove(board);
-    if (count == 0) {
-      id_piece.second->illuminatePaths(board);
-      // Calculate the number of possible moves
-      srand(time(0));
-      int possibleMoves = 0;
-      for (int x = 0; x < 8; x++)
-        for (int y = 0; y < 8; y++)
-          possibleMoves += board->getCellAt(x, y)->isIlluminated();
-
-      wxLogMessage("Piece: %s", id_piece.second->getId());
-      // Choose a random move
-      int randMove = rand() % possibleMoves;
-      for (int x = 0; x < 8 && possibleMoves != randMove; x++) {
-        for (int y = 0; y < 8 && possibleMoves != randMove; y++) {
-          wxLogMessage("Cell: %d, %d", x, y);
-          possibleMoves -= board->getCellAt(x, y)->isIlluminated();
-          if (possibleMoves == randMove) {
-            board
-                ->getCellAt(id_piece.second->getCellX(),
-                            id_piece.second->getCellY())
-                ->setPiece(nullptr);
-            board->getCellAt(x, y)->setPiece(id_piece.second);
-            wxLogMessage("Returns");
-            return std::make_pair(board->getCellAt(x, y), id_piece.second);
-          }
-        }
-      }
-    }
-  }
-  return std::make_pair(nullptr, nullptr);
+  // Move the piece
+  std::cout << "AI is moving " << bestmove.second->getId() << " to "
+            << bestmove.first->getCellX() << ", " << bestmove.first->getCellY()
+            << std::endl;
+  bestmove.second->move(bestmove.first->getCellX(), bestmove.first->getCellY(),
+                        board);
+  board->eraseAllIllumination();
+  board->switchTurn();
 }
 
 int AI::evaluateBoard(Board *board) {
@@ -73,25 +38,71 @@ int AI::evaluateBoard(Board *board) {
   return whiteValue - blackValue;
 }
 
-void AI::playTurn(Board *board) {
-  // Choose the best move
-  auto bestmove = minimax(board, 3, false);
+std::pair<Cell *, Piece *> AI::bestMove(Board *board) {
+  // Store the initial board
+  std::vector<std::pair<Cell *, Piece *>> initialBoard;
+  for (int x = 0; x < 8; x++) {
+    for (int y = 0; y < 8; y++) {
+      initialBoard.push_back(
+          std::make_pair(board->getCellAt(x, y), board->getPieceAt(x, y)));
+    }
+  }
+  int bestValue = 9999;
+  std::pair<Cell *, Piece *> bestMove;
 
-  // Move the piece
-  bestmove.first.second->move(bestmove.first.first->getCellX(),
-                              bestmove.first.first->getCellY(), board);
-  board->eraseAllIllumination();
-  board->switchTurn();
+  // Find the best move
+  for (auto piece : board->getPiecesMap()) {
+    if (!piece.second->isAlive() ||
+        piece.second->getColor() != board->getTurn() ||
+        !piece.second->canMove(board)) {
+      continue;
+    }
+    piece.second->illuminatePaths(board);
+    for (int x = 0; x < 8; x++) {
+      for (int y = 0; y < 8; y++) {
+        if (!board->getCellAt(x, y)->isIlluminated())
+          continue;
+
+        // Move the piece
+        board->getCellAt(piece.second->getCellX(), piece.second->getCellY())
+            ->setPiece(nullptr);
+        if (board->isTherePiece(x, y)) {
+          board->getPieceAt(x, y)->setAlive(false);
+        }
+        board->getCellAt(x, y)->setPiece(piece.second);
+        piece.second->setCellX(x);
+        piece.second->setCellY(y);
+
+        // Evaluate the tree
+        // int currentValue = minimax(board, 2, false);
+        int currentValue = 0;
+        if (currentValue < bestValue) {
+          bestValue = currentValue;
+          bestMove = std::make_pair(board->getCellAt(x, y), piece.second);
+          // }
+
+          // Undo the move
+          for (auto cell_piece : initialBoard) {
+            if (cell_piece.second == nullptr)
+              continue;
+            cell_piece.first->setPiece(cell_piece.second);
+            cell_piece.second->setCellX(cell_piece.first->getCellX());
+            cell_piece.second->setCellY(cell_piece.first->getCellY());
+            cell_piece.second->setAlive(true);
+          }
+        }
+      }
+    }
+  }
+  return bestMove;
 }
 
-std::pair<std::pair<Cell *, Piece *>, int> AI::minimax(Board *board, int depth,
-                                                       bool isMaximizing) {
+int AI::minimax(Board *board, int depth, bool isMaximizing) {
   std::cout << "Depth: " << depth << isMaximizing << std::endl;
   // Check if the game is finished or the depth is 0
   if (depth == 0 || board->isGameFinished()) {
     std::cout << "Break" << std::endl;
-    return std::make_pair(std::make_pair(nullptr, nullptr),
-                          evaluateBoard(board));
+    return evaluateBoard(board);
   }
   // Store the initial board of the node
   std::vector<std::pair<Cell *, Piece *>> initialBoard;
@@ -103,8 +114,6 @@ std::pair<std::pair<Cell *, Piece *>, int> AI::minimax(Board *board, int depth,
   }
   if (isMaximizing) {
     int maxValue = -9999;
-    std::pair<Cell *, Piece *> bestMove;
-    bestMove = chooseRandomMove(board);
 
     for (auto piece : board->getPiecesMap()) {
       if (!piece.second->isAlive() || piece.second->getColor() != "white" ||
@@ -122,33 +131,33 @@ std::pair<std::pair<Cell *, Piece *>, int> AI::minimax(Board *board, int depth,
               board->getPieceAt(x, y)->setAlive(false);
             }
             board->getCellAt(x, y)->setPiece(piece.second);
+            piece.second->setCellX(x);
+            piece.second->setCellY(y);
             // Recursively call minimax
             auto currentValue = minimax(board, depth - 1, false);
 
             // Undo the move
-            for (int i = 0; i < 64; i++) {
-              board->getPieceAt(x, y)->setAlive(true);
-              board
-                  ->getCellAt(initialBoard[i].first->getCellX(),
-                              initialBoard[i].first->getCellY())
-                  ->setPiece(initialBoard[i].second);
+            for (auto cell_piece : initialBoard) {
+              cell_piece.first->setPiece(cell_piece.second);
+              if (cell_piece.second != nullptr) {
+                cell_piece.second->setCellX(cell_piece.first->getCellX());
+                cell_piece.second->setCellY(cell_piece.first->getCellY());
+                cell_piece.second->setAlive(true);
+              }
             }
 
             // Check if the current value is better than the best value
-            if (currentValue.second > maxValue) {
-              std::cout << "Max: " << currentValue.second << std::endl;
-              bestMove = std::make_pair(board->getCellAt(x, y), piece.second);
-              maxValue = currentValue.second;
+            if (currentValue > maxValue) {
+              std::cout << "Max: " << currentValue << std::endl;
+              maxValue = currentValue;
             }
           }
         }
       }
     }
-    return std::make_pair(bestMove, maxValue);
+    return maxValue;
   } else {
     int minValue = 9999;
-    std::pair<Cell *, Piece *> bestMove;
-    bestMove = chooseRandomMove(board);
 
     for (auto piece : board->getPiecesMap()) {
       if (!piece.second->isAlive() || piece.second->getColor() != "black" ||
@@ -158,48 +167,38 @@ std::pair<std::pair<Cell *, Piece *>, int> AI::minimax(Board *board, int depth,
       piece.second->illuminatePaths(board);
       for (int x = 0; x < 8; x++) {
         for (int y = 0; y < 8; y++) {
-          if (board->getCellAt(x, y)->isIlluminated()) {
-            // Move the piece
-            board->getCellAt(piece.second->getCellX(), piece.second->getCellY())
-                ->setPiece(nullptr);
-            if (board->isTherePiece(x, y)) {
-              board->getPieceAt(x, y)->setAlive(false);
-            }
-            board->getCellAt(x, y)->setPiece(piece.second);
-            // Recursively call minimax
-            auto currentValue = minimax(board, depth - 1, true);
+          if (!board->getCellAt(x, y)->isIlluminated())
+            continue;
+          // Move the piece
+          board->getCellAt(piece.second->getCellX(), piece.second->getCellY())
+              ->setPiece(nullptr);
+          if (board->isTherePiece(x, y)) {
+            board->getPieceAt(x, y)->setAlive(false);
+          }
+          board->getCellAt(x, y)->setPiece(piece.second);
+          piece.second->setCellX(x);
+          piece.second->setCellY(y);
+          // Recursively call minimax
+          auto currentValue = minimax(board, depth - 1, true);
 
-            // Undo the move
-            for (int i = 0; i < 64; i++) {
-              board->getPieceAt(x, y)->setAlive(true);
-              board
-                  ->getCellAt(initialBoard[i].first->getCellX(),
-                              initialBoard[i].first->getCellY())
-                  ->setPiece(initialBoard[i].second);
+          // Undo the move
+          for (auto cell_piece : initialBoard) {
+            cell_piece.first->setPiece(cell_piece.second);
+            if (cell_piece.second != nullptr) {
+              cell_piece.second->setCellX(cell_piece.first->getCellX());
+              cell_piece.second->setCellY(cell_piece.first->getCellY());
+              cell_piece.second->setAlive(true);
             }
+          }
 
-            // Check if the current value is better than the best value
-            if (currentValue.second < minValue) {
-              std::cout << "Min: " << currentValue.second << std::endl;
-              bestMove = std::make_pair(board->getCellAt(x, y), piece.second);
-              minValue = currentValue.second;
-            }
+          // Check if the current value is better than the best value
+          if (currentValue < minValue) {
+            std::cout << "Max: " << currentValue << std::endl;
+            minValue = currentValue;
           }
         }
       }
     }
-    return std::make_pair(bestMove, minValue);
+    return minValue;
   }
 }
-
-std::pair<Cell* , Piece*> AI::bestmove(Board *board){
-std::vector<std::pair<Cell *, Piece *>> initialBoard;
-  for (int x = 0; x < 8; x++) {
-    for (int y = 0; y < 8; y++) {
-      initialBoard.push_back(
-          std::make_pair(board->getCellAt(x, y), board->getPieceAt(x, y)));
-    }
-  }
-
-}
-
