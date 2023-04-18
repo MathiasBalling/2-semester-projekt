@@ -3,18 +3,22 @@
 #include "wx/wx.h"
 
 // Standard Libraries - for rand() and srand()
+#include <algorithm>
 #include <cstdlib>
 #include <iostream>
 #include <time.h>
 #include <utility>
+int calculatedMoves;
 
 void AI::playTurn(Board *board) {
+  calculatedMoves = 0;
   // Choose the best move
   auto bestmove = bestMove(board);
 
   // Move the piece
   bestmove.second->move(bestmove.first->getCellX(), bestmove.first->getCellY(),
                         board);
+  std::cout << "AI calculated " << calculatedMoves << " moves" << std::endl;
   board->eraseAllIllumination();
   board->switchTurn();
 }
@@ -41,7 +45,8 @@ std::pair<Cell *, Piece *> AI::bestMove(Board *board) {
 
   // Find the best move
   for (auto piece : board->getPiecesMap()) {
-    if (!piece.second->isAlive() || piece.second->getColor() != "black" ||
+    if (!piece.second->isAlive() ||
+        piece.second->getColor() != board->getTurn() ||
         !piece.second->canMove(board)) {
       continue;
     }
@@ -50,6 +55,7 @@ std::pair<Cell *, Piece *> AI::bestMove(Board *board) {
       for (int y = 0; y < 8; y++) {
         if (!(board->getCellAt(x, y)->isIlluminated()))
           continue;
+        calculatedMoves++;
         // Move the piece
         int old_x = piece.second->getCellX();
         int old_y = piece.second->getCellY();
@@ -65,7 +71,7 @@ std::pair<Cell *, Piece *> AI::bestMove(Board *board) {
         board->getCellAt(x, y)->setPiece(piece.second);
 
         // Evaluate the tree
-        int currentValue = minimax(board, 4, false);
+        int currentValue = minimax(board, 5, false, -9999, 9999);
         if (currentValue < bestValue) {
           bestValue = currentValue;
           bestMove = std::make_pair(board->getCellAt(x, y), piece.second);
@@ -86,7 +92,8 @@ std::pair<Cell *, Piece *> AI::bestMove(Board *board) {
   return bestMove;
 }
 
-int AI::minimax(Board *board, int depth, bool isMaximizing) {
+int AI::minimax(Board *board, int depth, bool isMaximizing, int alpha,
+                int beta) {
   // Check if the game is finished or the depth is 0
   if (depth == 0 || board->isGameFinished()) {
     return evaluateBoard(board);
@@ -105,6 +112,7 @@ int AI::minimax(Board *board, int depth, bool isMaximizing) {
         for (int y = 0; y < 8; y++) {
           if (!(board->getCellAt(x, y)->isIlluminated()))
             continue;
+          calculatedMoves++;
           // Move the piece
           int old_x = piece.second->getCellX();
           int old_y = piece.second->getCellY();
@@ -120,12 +128,10 @@ int AI::minimax(Board *board, int depth, bool isMaximizing) {
           board->getCellAt(x, y)->setPiece(piece.second);
 
           // Recursively call minimax
-          int currentValue = minimax(board, depth - 1, false);
+          int currentValue = minimax(board, depth - 1, false, alpha, beta);
 
           // Check if the current value is better than the best value
-          if (currentValue > maxValue) {
-            maxValue = currentValue;
-          }
+          maxValue = std::max(maxValue, currentValue);
           // Undo the move
           if (dead_piece != nullptr) {
             dead_piece->setAlive(true);
@@ -136,8 +142,14 @@ int AI::minimax(Board *board, int depth, bool isMaximizing) {
                 ->setPiece(nullptr);
           }
           board->getCellAt(old_x, old_y)->setPiece(piece.second);
+
+          alpha = std::max(alpha, maxValue);
+          if (beta <= alpha)
+            break;
         }
       }
+      if (beta <= alpha)
+        break;
     }
     return maxValue;
   } else {
@@ -153,6 +165,7 @@ int AI::minimax(Board *board, int depth, bool isMaximizing) {
         for (int y = 0; y < 8; y++) {
           if (!(board->getCellAt(x, y)->isIlluminated()))
             continue;
+          calculatedMoves++;
           // Move the piece
           int old_x = piece.second->getCellX();
           int old_y = piece.second->getCellY();
@@ -168,12 +181,10 @@ int AI::minimax(Board *board, int depth, bool isMaximizing) {
           board->getCellAt(x, y)->setPiece(piece.second);
 
           // Recursively call minimax
-          int currentValue = minimax(board, depth - 1, true);
+          int currentValue = minimax(board, depth - 1, true, alpha, beta);
 
           // Check if the current value is better than the best value
-          if (currentValue < minValue) {
-            minValue = currentValue;
-          }
+          minValue = std::min(minValue, currentValue);
 
           // Undo the move
           if (dead_piece != nullptr) {
@@ -185,8 +196,14 @@ int AI::minimax(Board *board, int depth, bool isMaximizing) {
                 ->setPiece(nullptr);
           }
           board->getCellAt(old_x, old_y)->setPiece(piece.second);
+
+          beta = std::min(beta, minValue);
+          if (beta <= alpha)
+            break;
         }
       }
+      if (beta <= alpha)
+        break;
     }
     return minValue;
   }
