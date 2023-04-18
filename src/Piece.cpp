@@ -96,9 +96,7 @@ Pawn::Pawn(int cellX, int cellY, wxBitmap image, std::string id)
     : Piece(cellX, cellY, image, id) {}
 
 void Pawn::illuminatePaths(Board *board) {
-  int sign = 1;
-  if (m_color == "black")
-    sign = -1;
+  int sign = m_color == "white" ? 1 : -1;
   std::pair<int, int> offsets[3] = {
       {-1, -1 * sign}, {0, -1 * sign}, {1, -1 * sign}};
 

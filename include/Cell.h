@@ -5,14 +5,13 @@
 
 class Cell {
 public:
-  Cell();
+  Cell(int cellX, int cellY);
   bool isIlluminated();
   void turnOff();
   void turnOn();
   Piece *getPiece();
   void setPiece(Piece *piece);
   bool hasPiece();
-  void setPos(int cellX, int cellY);
   int getCellX();
   int getCellY();
 

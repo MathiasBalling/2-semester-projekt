@@ -155,8 +155,7 @@ void Board::initCells() {
   for (int i = 0; i < 8; i++) {
     m_cells.push_back(empty);
     for (int j = 0; j < 8; j++) {
-      m_cells[i][j] = new Cell();
-      m_cells[i][j]->setPos(i, j);
+      m_cells[i][j] = new Cell(i, j);
     }
   }
 
@@ -165,7 +164,6 @@ void Board::initCells() {
     Piece *piece = it.second;
     int x = piece->getCellX();
     int y = piece->getCellY();
-    m_cells[x][y] = new Cell();
     m_cells[x][y]->setPiece(piece);
   }
 }
