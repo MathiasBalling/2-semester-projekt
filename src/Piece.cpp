@@ -86,8 +86,6 @@ void Piece::move(int targetX, int targetY, Board *board) {
   }
   // Move piece on the board
   board->getCellAt(m_cellX, m_cellY)->setPiece(nullptr);
-  m_cellX = targetX;
-  m_cellY = targetY;
   board->getCellAt(targetX, targetY)->setPiece(this);
 }
 
