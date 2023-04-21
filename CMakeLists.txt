@@ -29,7 +29,10 @@ message(STATUS "${wxWidgets_CXX_FLAGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${libmodbus_CFLAGS} ${wxWidgets_CXX_FLAGS}")
 
 include_directories(include)
-file(GLOB_RECURSE SRC_FILES src/*.cpp)
+file(GLOB_RECURSE SRC_FILES 
+src/*.cpp
+include/*.h
+)
 
 add_executable(${PROJECT_NAME} ${SRC_FILES})
 target_link_libraries(${PROJECT_NAME} ${wxWidgets_LIBRARIES} ${libmodbus_LDFLAGS})
