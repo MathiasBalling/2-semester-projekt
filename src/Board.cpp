@@ -167,3 +167,19 @@ void Board::initCells() {
     m_cells[x][y]->setPiece(piece);
   }
 }
+
+void Board::addDeadPiece(Piece *piece, std::string color) {
+  if (color == "black")
+    m_deadBlackPieces.push_back(piece);
+  else {
+    m_deadWhitePieces.push_back(piece);
+  }
+}
+
+std::vector<Piece *> Board::getDeadPieces(std::string color) {
+  if (color == "black")
+    return m_deadBlackPieces;
+  else {
+    return m_deadWhitePieces;
+  }
+}

@@ -2,7 +2,7 @@
 #include "Robot.h"
 
 Robot::Robot() {
-  getDirection(-103, -405, 162, -295);
+  getDirection(-11, -412, 254, -306);
 
   // Add the ip address of the modbus device
   m_mb = modbus_new_tcp("192.168.100.11", 502);
@@ -43,53 +43,53 @@ void Robot::setXval(int val) {
   if (val < 0) {
     val = val * -1 + 2000;
   }
-  // modbus_connect(m_mb);
+  modbus_connect(m_mb);
   // Write the x position to the modbus device
   int msg = modbus_write_register(m_mb, 128, val);
   if (msg == -1) {
     wxLogMessage("Modbus: Counldn't set x!");
   }
-  // modbus_close(m_mb);
+  modbus_close(m_mb);
 }
 
 void Robot::setYval(int val) {
   if (val < 0) {
     val = val * -1 + 2000;
   }
-  // modbus_connect(m_mb);
+  modbus_connect(m_mb);
   // Write the y position to the modbus device
   int msg = modbus_write_register(m_mb, 129, val);
   if (msg == -1) {
     wxLogMessage("Modbus: Counldn't set y!");
   }
-  // modbus_close(m_mb);
+  modbus_close(m_mb);
 }
 
 void Robot::setZval(int val) {
   if (val < 0) {
     val = val * -1 + 2000;
   }
-  // modbus_connect(m_mb);
+  modbus_connect(m_mb);
   // Write the z position to the modbus device
   int msg = modbus_write_register(m_mb, 130, val);
   if (msg == -1) {
     wxLogMessage("Modbus: Counldn't set z!");
   }
-  // modbus_close(m_mb);
+  modbus_close(m_mb);
 }
 
 void Robot::setCO(uint16_t val) {
-  // modbus_connect(m_mb);
+  modbus_connect(m_mb);
   // Write the configurable output to the modbus device
   int msg = modbus_write_register(m_mb, 31, val);
   if (msg == -1) {
     wxLogMessage("Modbus: Counldn't set Digital Output!");
   }
-  // modbus_close(m_mb);
+  modbus_close(m_mb);
 }
 
 int Robot::getDO() {
-  // modbus_connect(m_mb);
+  modbus_connect(m_mb);
   // Read the digital output from the modbus device
   uint16_t val;
   int msg = modbus_read_registers(m_mb, 1, 1, &val);
@@ -99,7 +99,7 @@ int Robot::getDO() {
   } else {
     return val;
   }
-  // modbus_close(m_mb);
+  modbus_close(m_mb);
 }
 
 bool Robot::isConnected() { return m_connected; }
@@ -109,7 +109,7 @@ void Robot::movePiece() {
   using namespace std::chrono_literals;
   using namespace std::this_thread;
 
-  // modbus_connect(m_mb);
+  modbus_connect(m_mb);
   while (m_connected) {
     if (shouldRun()) {
       // Get piece position from queue
@@ -148,7 +148,7 @@ void Robot::movePiece() {
       sleep_for(5s);
     }
   }
-  // modbus_close(m_mb);
+  modbus_close(m_mb);
 }
 
 bool Robot::shouldRun() {

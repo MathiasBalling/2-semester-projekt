@@ -66,23 +66,28 @@ void Piece::move(int targetX, int targetY, Board *board) {
         std::string::npos)
       board->setGameFinished(true);
   }
+  uint16_t height = 200;
   // Check if there's a piece in the target cell
   if (board->isTherePiece(targetX, targetY)) {
-    std::string tempid = board->getPieceAt(targetX, targetY)->getId();
+    // Calculate the position outside the board
+    Piece *deadPiece = board->getPieceAt(targetX, targetY);
+    board->addDeadPiece(deadPiece, deadPiece->getColor());
+    std::pair<int, int> deadPiecePos;
     // Take the piece from the target cell
-    board->mb->moveQueue(targetX, targetY, 200, "Take dead piece", tempid);
+    board->mb->moveQueue(targetX, targetY, height, "Take dead piece",
+                         deadPiece->getId());
     // Then move to the position outside the board
-    board->mb->moveQueue(3, 9, 200, "To Outside Board", tempid);
+    board->mb->moveQueue(3, 9, height, "To Outside Board", deadPiece->getId());
     // Get piece from initial cell
-    board->mb->moveQueue(m_cellX, m_cellY, 200, "From", m_id);
+    board->mb->moveQueue(m_cellX, m_cellY, height, "From", m_id);
     // Then move to the target cell
-    board->mb->moveQueue(targetX, targetY, 200, "To", m_id);
+    board->mb->moveQueue(targetX, targetY, height, "To", m_id);
   } else {
     // If there's no piece in the target cell, just take the piece from the
     // initial cell
-    board->mb->moveQueue(m_cellX, m_cellY, 200, "From", m_id);
+    board->mb->moveQueue(m_cellX, m_cellY, height, "From", m_id);
     // Then move to the target cell
-    board->mb->moveQueue(targetX, targetY, 200, "To", m_id);
+    board->mb->moveQueue(targetX, targetY, height, "To", m_id);
   }
   // Move piece on the board
   board->getCellAt(m_cellX, m_cellY)->setPiece(nullptr);

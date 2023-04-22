@@ -1,6 +1,8 @@
 #pragma once
 
 // wxWidgets
+#include <string>
+#include <vector>
 #include <wx/wx.h>
 
 // Standard Libraries
@@ -8,6 +10,7 @@
 
 // Header Files
 #include "Cell.h"
+#include "Piece.h"
 #include "Robot.h"
 
 class Board {
@@ -28,6 +31,8 @@ public:
   void eraseAllIllumination();
   void setGameFinished(bool gameFinished);
   bool isGameFinished();
+  void addDeadPiece(Piece *piece, std::string color);
+  std::vector<Piece *> getDeadPieces(std::string color);
   Robot *mb = new Robot();
 
 private:
@@ -35,8 +40,10 @@ private:
   std::unordered_map<std::string, Piece *> m_pieces;
   std::vector<std::vector<Cell *>> m_cells;
   Piece *m_selectedPiece;
-  bool m_enemyIsAI = true;
+  bool m_enemyIsAI = false;
   bool m_gameFinished;
   void initPieces();
   void initCells();
+  std::vector<Piece *> m_deadWhitePieces;
+  std::vector<Piece *> m_deadBlackPieces;
 };
