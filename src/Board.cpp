@@ -47,7 +47,8 @@ void Board::switchTurn() {
 
 void Board::setGameFinished(bool gameFinished) {
   m_gameFinished = gameFinished;
-  wxMessageBox(wxString("Game ended, " + m_turn + " wins."));
+  // wxMessageBox(wxString("Game ended, " + m_turn + " wins."));
+  // std::cout << "Game ended, " << m_turn << " wins." << std::endl;
 }
 
 bool Board::isGameFinished() { return m_gameFinished; }

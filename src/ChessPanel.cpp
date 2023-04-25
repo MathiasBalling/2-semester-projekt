@@ -9,8 +9,8 @@ ChessPanel::ChessPanel(wxFrame *parent, Board *board)
               wxBORDER_NONE),
       m_board(board), m_enemySelected(false) {
   wxWindow::SetBackgroundStyle(wxBG_STYLE_PAINT);
-  Connect(wxEVT_PAINT, wxPaintEventHandler(ChessPanel::OnPaint));
-  Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ChessPanel::OnLeftMouseDown));
+  Bind(wxEVT_PAINT, &ChessPanel::OnPaint, this);
+  Bind(wxEVT_LEFT_DOWN, &ChessPanel::OnLeftMouseDown, this);
 }
 
 void ChessPanel::OnPaint(wxPaintEvent &event) {
@@ -50,6 +50,8 @@ void ChessPanel::OnLeftMouseDown(wxMouseEvent &event) {
   // Translate mouse position to a cell
   int cellX = (int)(pos.x / cellLenX);
   int cellY = (int)(pos.y / cellLenY);
+  cellX = cellX == 8 ? 7 : cellX;
+  cellY = cellY == 8 ? 7 : cellY;
 
   // Get the selected cell
   Cell *selectedCell = m_board->getCellAt(cellX, cellY);
@@ -129,10 +131,23 @@ void ChessPanel::drawPieces(wxGraphicsContext *gc) {
     Piece *piece = it.second;
     if (piece->isAlive()) {
       int dim = cellLenX < cellLenY ? cellLenX : cellLenY;
-      const int cellPosX = piece->getCellX() * cellLenX + (0.5*cellLenX - 0.4 * dim);
-      const int cellPosY = piece->getCellY() * cellLenY + (0.5*cellLenY - 0.4 * dim);
-      const int imageSizeX=dim*0.8;
-      const int imageSizeY=dim*0.8;
+      float scale = 0.8;
+      int imgHeight = piece->getImage().GetHeight();
+      int imgWidth = piece->getImage().GetWidth();
+
+      if (imgHeight > imgWidth) {
+        imgWidth = (int)(imgWidth * (dim * scale) / imgHeight);
+        imgHeight = (int)(dim * scale);
+      } else {
+        imgHeight = (int)(imgHeight * (dim * scale) / imgWidth);
+        imgWidth = (int)(dim * scale);
+      }
+      int cellPosX =
+          piece->getCellX() * cellLenX + (cellLenX / 2 - imgWidth / 2);
+      int cellPosY =
+          piece->getCellY() * cellLenY + (cellLenY / 2 - imgHeight / 2);
+      int imageSizeX = imgWidth;
+      int imageSizeY = imgHeight;
       gc->DrawBitmap(piece->getImage(), cellPosX, cellPosY, imageSizeX,
                      imageSizeY);
     }

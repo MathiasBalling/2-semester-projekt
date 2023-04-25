@@ -40,7 +40,6 @@ void Piece::setValue(int value) { m_value = value; }
 int Piece::getValue() { return m_value; }
 
 bool Piece::canMove(Board *board) {
-  //
   illuminatePaths(board);
   for (int x = 0; x < 8; x++) {
     for (int y = 0; y < 8; y++) {

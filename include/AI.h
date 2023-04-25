@@ -13,5 +13,4 @@ private:
   static std::pair<Cell *, Piece *> bestMove(Board *board);
   static int minimax(Board *board, int depth, bool isMaximizing, int alpha,
                      int beta);
-  // static int calculatedMoves;
 };
