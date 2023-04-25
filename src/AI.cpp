@@ -8,6 +8,7 @@
 #include <iostream>
 #include <time.h>
 #include <utility>
+#include <vector>
 int calculatedMoves;
 
 void AI::playTurn(Board *board) {
@@ -51,44 +52,50 @@ std::pair<Cell *, Piece *> AI::bestMove(Board *board) {
       continue;
     }
     piece.second->illuminatePaths(board);
+    std::vector<std::pair<int, int>> moves;
     for (int x = 0; x < 8; x++) {
       for (int y = 0; y < 8; y++) {
-        if (!(board->getCellAt(x, y)->isIlluminated()))
-          continue;
-        calculatedMoves++;
-        // Move the piece
-        int old_x = piece.second->getCellX();
-        int old_y = piece.second->getCellY();
-        board->getCellAt(piece.second->getCellX(), piece.second->getCellY())
-            ->setPiece(nullptr);
-        Piece *dead_piece;
-        if (board->isTherePiece(x, y)) {
-          dead_piece = board->getPieceAt(x, y);
-          dead_piece->setAlive(false);
-        } else {
-          dead_piece = nullptr;
-        }
-        board->getCellAt(x, y)->setPiece(piece.second);
-
-        // Evaluate the tree
-        int currentValue = minimax(board, 5, false, -9999, 9999);
-        if (currentValue < bestValue) {
-          bestValue = currentValue;
-          bestMove = std::make_pair(board->getCellAt(x, y), piece.second);
-        }
-        // Undo the move
-        if (dead_piece != nullptr) {
-          dead_piece->setAlive(true);
-          board->getCellAt(piece.second->getCellX(), piece.second->getCellY())
-              ->setPiece(dead_piece);
-        } else {
-          board->getCellAt(piece.second->getCellX(), piece.second->getCellY())
-              ->setPiece(nullptr);
-        }
-        board->getCellAt(old_x, old_y)->setPiece(piece.second);
+        if (board->getCellAt(x, y)->isIlluminated())
+          moves.push_back(std::make_pair(x, y));
       }
     }
+    for (auto move : moves) {
+      calculatedMoves++;
+      // Move the piece
+      int old_x = piece.second->getCellX();
+      int old_y = piece.second->getCellY();
+      board->getCellAt(piece.second->getCellX(), piece.second->getCellY())
+          ->setPiece(nullptr);
+      Piece *dead_piece;
+      if (board->isTherePiece(move.first, move.second)) {
+        dead_piece = board->getPieceAt(move.first, move.second);
+        dead_piece->setAlive(false);
+      } else {
+        dead_piece = nullptr;
+      }
+      board->getCellAt(move.first, move.second)->setPiece(piece.second);
+
+      // Evaluate the tree
+      int currentValue = minimax(board, 4, true, -9999, 9999);
+      // std::cout << "Current value: " << currentValue << std::endl;
+      if (currentValue < bestValue) {
+        bestValue = currentValue;
+        bestMove = std::make_pair(board->getCellAt(move.first, move.second),
+                                  piece.second);
+      }
+      // Undo the move
+      if (dead_piece != nullptr) {
+        dead_piece->setAlive(true);
+        board->getCellAt(piece.second->getCellX(), piece.second->getCellY())
+            ->setPiece(dead_piece);
+      } else {
+        board->getCellAt(piece.second->getCellX(), piece.second->getCellY())
+            ->setPiece(nullptr);
+      }
+      board->getCellAt(old_x, old_y)->setPiece(piece.second);
+    }
   }
+  // std::cout << "Best value: " << bestValue << std::endl;
   return bestMove;
 }
 
@@ -107,46 +114,45 @@ int AI::minimax(Board *board, int depth, bool isMaximizing, int alpha,
           !piece.second->canMove(board)) {
         continue;
       }
+      std::vector<std::pair<int, int>> moves;
       piece.second->illuminatePaths(board);
       for (int x = 0; x < 8; x++) {
         for (int y = 0; y < 8; y++) {
-          if (!(board->getCellAt(x, y)->isIlluminated()))
-            continue;
-          calculatedMoves++;
-          // Move the piece
-          int old_x = piece.second->getCellX();
-          int old_y = piece.second->getCellY();
-          board->getCellAt(piece.second->getCellX(), piece.second->getCellY())
-              ->setPiece(nullptr);
-          Piece *dead_piece;
-          if (board->isTherePiece(x, y)) {
-            dead_piece = board->getPieceAt(x, y);
-            dead_piece->setAlive(false);
-          } else {
-            dead_piece = nullptr;
-          }
-          board->getCellAt(x, y)->setPiece(piece.second);
-
-          // Recursively call minimax
-          int currentValue = minimax(board, depth - 1, false, alpha, beta);
-
-          // Check if the current value is better than the best value
-          maxValue = std::max(maxValue, currentValue);
-          // Undo the move
-          if (dead_piece != nullptr) {
-            dead_piece->setAlive(true);
-            board->getCellAt(piece.second->getCellX(), piece.second->getCellY())
-                ->setPiece(dead_piece);
-          } else {
-            board->getCellAt(piece.second->getCellX(), piece.second->getCellY())
-                ->setPiece(nullptr);
-          }
-          board->getCellAt(old_x, old_y)->setPiece(piece.second);
-
-          alpha = std::max(alpha, maxValue);
-          if (beta <= alpha)
-            break;
+          if (board->getCellAt(x, y)->isIlluminated())
+            moves.push_back(std::make_pair(x, y));
         }
+      }
+      for (auto move : moves) {
+        calculatedMoves++;
+        // Move the piece
+        int old_x = piece.second->getCellX();
+        int old_y = piece.second->getCellY();
+        board->getCellAt(piece.second->getCellX(), piece.second->getCellY())
+            ->setPiece(nullptr);
+        Piece *dead_piece = nullptr;
+        if (board->isTherePiece(move.first, move.second)) {
+          dead_piece = board->getPieceAt(move.first, move.second);
+          dead_piece->setAlive(false);
+        }
+        board->getCellAt(move.first, move.second)->setPiece(piece.second);
+
+        // Recursively call minimax
+        int currentValue = minimax(board, depth - 1, false, alpha, beta);
+
+        // Check if the current value is better than the best value
+        maxValue = std::max(maxValue, currentValue);
+        // Undo the move
+        if (dead_piece != nullptr) {
+          dead_piece->setAlive(true);
+          board->getCellAt(move.first, move.second)->setPiece(dead_piece);
+        } else {
+          board->getCellAt(move.first, move.second)->setPiece(nullptr);
+        }
+        board->getCellAt(old_x, old_y)->setPiece(piece.second);
+
+        alpha = std::max(alpha, maxValue);
+        if (beta <= alpha)
+          break;
       }
       if (beta <= alpha)
         break;
@@ -161,46 +167,45 @@ int AI::minimax(Board *board, int depth, bool isMaximizing, int alpha,
         continue;
       }
       piece.second->illuminatePaths(board);
+      std::vector<std::pair<int, int>> moves;
       for (int x = 0; x < 8; x++) {
         for (int y = 0; y < 8; y++) {
-          if (!(board->getCellAt(x, y)->isIlluminated()))
-            continue;
-          calculatedMoves++;
-          // Move the piece
-          int old_x = piece.second->getCellX();
-          int old_y = piece.second->getCellY();
-          board->getCellAt(piece.second->getCellX(), piece.second->getCellY())
-              ->setPiece(nullptr);
-          Piece *dead_piece;
-          if (board->isTherePiece(x, y)) {
-            dead_piece = board->getPieceAt(x, y);
-            dead_piece->setAlive(false);
-          } else {
-            dead_piece = nullptr;
-          }
-          board->getCellAt(x, y)->setPiece(piece.second);
-
-          // Recursively call minimax
-          int currentValue = minimax(board, depth - 1, true, alpha, beta);
-
-          // Check if the current value is better than the best value
-          minValue = std::min(minValue, currentValue);
-
-          // Undo the move
-          if (dead_piece != nullptr) {
-            dead_piece->setAlive(true);
-            board->getCellAt(piece.second->getCellX(), piece.second->getCellY())
-                ->setPiece(dead_piece);
-          } else {
-            board->getCellAt(piece.second->getCellX(), piece.second->getCellY())
-                ->setPiece(nullptr);
-          }
-          board->getCellAt(old_x, old_y)->setPiece(piece.second);
-
-          beta = std::min(beta, minValue);
-          if (beta <= alpha)
-            break;
+          if (board->getCellAt(x, y)->isIlluminated())
+            moves.push_back(std::make_pair(x, y));
         }
+      }
+      for (auto move : moves) {
+        calculatedMoves++;
+        // Move the piece
+        int old_x = piece.second->getCellX();
+        int old_y = piece.second->getCellY();
+        board->getCellAt(piece.second->getCellX(), piece.second->getCellY())
+            ->setPiece(nullptr);
+        Piece *dead_piece = nullptr;
+        if (board->isTherePiece(move.first, move.second)) {
+          dead_piece = board->getPieceAt(move.first, move.second);
+          dead_piece->setAlive(false);
+        }
+        board->getCellAt(move.first, move.second)->setPiece(piece.second);
+
+        // Recursively call minimax
+        int currentValue = minimax(board, depth - 1, true, alpha, beta);
+
+        // Check if the current value is better than the best value
+        minValue = std::min(minValue, currentValue);
+
+        // Undo the move
+        if (dead_piece != nullptr) {
+          dead_piece->setAlive(true);
+          board->getCellAt(move.first, move.second)->setPiece(dead_piece);
+        } else {
+          board->getCellAt(move.first, move.second)->setPiece(nullptr);
+        }
+        board->getCellAt(old_x, old_y)->setPiece(piece.second);
+
+        beta = std::min(beta, minValue);
+        if (beta <= alpha)
+          break;
       }
       if (beta <= alpha)
         break;

@@ -102,8 +102,8 @@ ControlWindow::ControlWindow(const wxString &title)
   bottompanel->SetSizer(bottomsizer);
 
   wxBoxSizer *mainsizer = new wxBoxSizer(wxVERTICAL);
-  mainsizer->Add(queuepanel, 1, wxEXPAND);
-  mainsizer->Add(bottompanel, 1, wxEXPAND);
+  mainsizer->Add(queuepanel, 6, wxEXPAND);
+  mainsizer->Add(bottompanel,4, wxEXPAND);
   mainpanel->SetSizer(mainsizer);
 }
 
