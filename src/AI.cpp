@@ -59,42 +59,28 @@ std::pair<Cell *, Piece *> AI::bestMove(Board *board) {
     }
     for (auto move : moves) {
       // Move the piece
-      int old_x = piece.second->getCellX();
-      int old_y = piece.second->getCellY();
-      board->getCellAt(piece.second->getCellX(), piece.second->getCellY())
-          ->setPiece(nullptr);
-      Piece *dead_piece;
-      if (board->isTherePiece(move.first, move.second)) {
-        dead_piece = board->getPieceAt(move.first, move.second);
-        dead_piece->setAlive(false);
-        if (dead_piece->getId().find("King") != std::string::npos) {
+      int pieceX = piece.second->getCellX();
+      int pieceY = piece.second->getCellY();
+      Piece *deadPiece =
+          piece.second->tempMovePiece(move.first, move.second, board);
+      if (deadPiece != nullptr) {
+        if (deadPiece->getId().find("King") != std::string::npos) {
           board->setGameFinished(true);
         }
-      } else {
-        dead_piece = nullptr;
       }
-      board->getCellAt(move.first, move.second)->setPiece(piece.second);
 
       // Evaluate the tree
-      int currentValue = minimax(board, 2, true, -9999, 9999);
+      int currentValue = minimax(board, 4, true, -9999, 9999);
       if (currentValue < bestValue) {
         bestValue = currentValue;
         bestMove = std::make_pair(board->getCellAt(move.first, move.second),
                                   piece.second);
       }
       // Undo the move
-      if (dead_piece != nullptr) {
-        dead_piece->setAlive(true);
-        board->getCellAt(piece.second->getCellX(), piece.second->getCellY())
-            ->setPiece(dead_piece);
-        if (dead_piece->getId().find("King") != std::string::npos) {
-          board->setGameFinished(false);
-        }
-      } else {
-        board->getCellAt(piece.second->getCellX(), piece.second->getCellY())
-            ->setPiece(nullptr);
+      piece.second->tempMoveUndo(pieceX, pieceY, deadPiece, board);
+      if (board->isGameFinished()) {
+        board->setGameFinished(false);
       }
-      board->getCellAt(old_x, old_y)->setPiece(piece.second);
     }
   }
   return bestMove;
@@ -125,19 +111,15 @@ int AI::minimax(Board *board, int depth, bool isMaximizing, int alpha,
     }
     for (auto move : moves) {
       // Move the piece
-      int old_x = piece.second->getCellX();
-      int old_y = piece.second->getCellY();
-      board->getCellAt(piece.second->getCellX(), piece.second->getCellY())
-          ->setPiece(nullptr);
-      Piece *dead_piece = nullptr;
-      if (board->isTherePiece(move.first, move.second)) {
-        dead_piece = board->getPieceAt(move.first, move.second);
-        dead_piece->setAlive(false);
-        if (dead_piece->getId().find("King") != std::string::npos) {
+      int pieceX = piece.second->getCellX();
+      int pieceY = piece.second->getCellY();
+      Piece *deadPiece =
+          piece.second->tempMovePiece(move.first, move.second, board);
+      if (deadPiece != nullptr) {
+        if (deadPiece->getId().find("King") != std::string::npos) {
           board->setGameFinished(true);
         }
       }
-      board->getCellAt(move.first, move.second)->setPiece(piece.second);
 
       if (isMaximizing) {
         // Recursively call minimax
@@ -161,16 +143,10 @@ int AI::minimax(Board *board, int depth, bool isMaximizing, int alpha,
       }
 
       // Undo the move
-      if (dead_piece != nullptr) {
-        dead_piece->setAlive(true);
-        board->getCellAt(move.first, move.second)->setPiece(dead_piece);
-        if (dead_piece->getId().find("King") != std::string::npos) {
-          board->setGameFinished(false);
-        }
-      } else {
-        board->getCellAt(move.first, move.second)->setPiece(nullptr);
+      piece.second->tempMoveUndo(pieceX, pieceY, deadPiece, board);
+      if (board->isGameFinished()) {
+        board->setGameFinished(false);
       }
-      board->getCellAt(old_x, old_y)->setPiece(piece.second);
 
       if (beta <= alpha)
         break;

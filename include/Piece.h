@@ -23,6 +23,8 @@ public:
   void setAlive(bool isAlive);
   void setValue(int value);
   int getValue();
+  Piece *tempMovePiece(int toX, int toY, Board *board);
+  void tempMoveUndo(int fromX, int fromY, Piece *piece, Board *board);
 
 protected:
   int m_value;

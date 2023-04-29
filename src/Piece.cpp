@@ -55,6 +55,27 @@ bool Piece::canMove(Board *board) {
   return false;
 }
 
+Piece *Piece::tempMovePiece(int toX, int toY, Board *board) {
+  board->getCellAt(getCellX(), getCellY())->setPiece(nullptr);
+  Piece *deadPiece;
+  if (board->isTherePiece(toX, toY)) {
+    deadPiece = board->getPieceAt(toX, toY);
+    deadPiece->setAlive(false);
+  } else {
+    deadPiece = nullptr;
+  }
+  board->getCellAt(toX, toY)->setPiece(this);
+  return deadPiece;
+}
+
+void Piece::tempMoveUndo(int fromX, int fromY, Piece *deadPiece, Board *board) {
+  board->getCellAt(getCellX(), getCellY())->setPiece(deadPiece);
+  board->getCellAt(fromX, fromY)->setPiece(this);
+  if (deadPiece != nullptr) {
+    deadPiece->setAlive(true);
+  }
+}
+
 void Piece::move(int targetX, int targetY, Board *board) {
   // Check if there's a piece in the target cell
   if (board->isTherePiece(targetX, targetY)) {
@@ -128,6 +149,7 @@ void Pawn::illuminatePaths(Board *board) {
        !(board->isTherePiece(m_cellX, 3)) &&
        !(board->isTherePiece(m_cellX, 2))))
     board->getCellAt(m_cellX, m_cellY - 2 * sign)->turnOn();
+
 }
 Rook::Rook(int cellX, int cellY, wxBitmap image, std::string id)
     : Piece(cellX, cellY, image, id) {}
@@ -161,6 +183,7 @@ void Rook::illuminatePaths(Board *board) {
 
   if (x < 8 && board->isThereEnemy(x, m_cellY))
     board->getCellAt(x, m_cellY)->turnOn();
+
 }
 
 Knight::Knight(int cellX, int cellY, wxBitmap image, std::string id)
@@ -176,6 +199,7 @@ void Knight::illuminatePaths(Board *board) {
       board->getCellAt(m_cellX + offset.first, m_cellY + offset.second)
           ->turnOn();
   }
+
 }
 
 Bishop::Bishop(int cellX, int cellY, wxBitmap image, std::string id)
@@ -214,6 +238,8 @@ void Bishop::illuminatePaths(Board *board) {
 
   if (x < 8 && y < 8 && board->isThereEnemy(x, y))
     board->getCellAt(x, y)->turnOn();
+
+
 }
 
 Queen::Queen(int cellX, int cellY, wxBitmap image, std::string id)
@@ -280,6 +306,7 @@ void Queen::illuminatePaths(Board *board) {
 
   if (x < 8 && board->isThereEnemy(x, m_cellY))
     board->getCellAt(x, m_cellY)->turnOn();
+ 
 }
 
 King::King(int cellX, int cellY, wxBitmap image, std::string id)
@@ -295,4 +322,5 @@ void King::illuminatePaths(Board *board) {
       board->getCellAt(m_cellX + offset.first, m_cellY + offset.second)
           ->turnOn();
   }
+ 
 }

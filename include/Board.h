@@ -32,6 +32,7 @@ public:
   void setGameFinished(bool gameFinished);
   bool isGameFinished();
   void addDeadPiece(Piece *piece, std::string color);
+  bool isKingChecked(std::string color);
   std::vector<Piece *> getDeadPieces(std::string color);
   Robot *mb = new Robot();
 

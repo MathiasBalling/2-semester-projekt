@@ -4,6 +4,7 @@
 #include "Piece.h"
 
 // wxWidgets
+#include <string>
 #include <wx/bitmap.h>
 #include <wx/msgdlg.h>
 
@@ -57,6 +58,26 @@ void Board::eraseAllIllumination() {
   for (int x = 0; x < 8; x++)
     for (int y = 0; y < 8; y++)
       getCellAt(x, y)->turnOff();
+}
+
+bool Board::isKingChecked(std::string color) {
+  for (auto piece : m_pieces) {
+    if (piece.second->getColor() != color || !piece.second->isAlive() ||
+        !piece.second->canMove(this)) {
+      continue;
+    }
+    piece.second->illuminatePaths(this);
+    for (int x = 0; x < 8; x++) {
+      for (int y = 0; y < 8; y++) {
+        if (getCellAt(x, y)->isIlluminated() &&
+            getPieceAt(x, y)->getId().find("King") != std::string::npos) {
+          eraseAllIllumination();
+          return true;
+        }
+      }
+    }
+  }
+  return false;
 }
 
 void Board::setEnemyIsAI(bool enemyIsAI) { m_enemyIsAI = enemyIsAI; }
