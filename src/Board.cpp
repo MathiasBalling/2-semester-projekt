@@ -82,6 +82,8 @@ bool Board::isKingChecked(std::string color) {
 
 void Board::setEnemyIsAI(bool enemyIsAI) { m_enemyIsAI = enemyIsAI; }
 
+bool Board::isEnemyAI() { return m_enemyIsAI; }
+
 bool Board::isThereEnemy(int cellX, int cellY) {
 
   return m_cells[cellX][cellY]->getPiece() != nullptr &&

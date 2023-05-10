@@ -1,6 +1,7 @@
 #pragma once
 
 // Header Files
+#include "ChessFrame.h"
 #include "ControlWindow.h"
 
 // Standard Libraries
@@ -16,16 +17,20 @@
 
 class Robot {
 private:
-  int m_xCorner, m_yCorner;
+  int m_xCorner, m_yCorner, m_xCornerBR, m_yCornerBR, m_xCornerBL, m_yCornerBL;
   int m_dX, m_dY;
+  uint16_t m_zHeight = 200;
   bool m_connected = false;
   std::vector<int> m_piecePosQueue;
   std::thread m_thread;
   modbus_t *m_mb;
   ControlWindow *m_controlWindow;
+  wxDialog *m_dialog;
+  Board *m_board;
+  void makeDialog();
 
 public:
-  Robot();
+  Robot(Board *board);
   ~Robot();
   std::pair<int, int> getXY(const int &cellX, const int &cellY);
   void setXval(int val);
@@ -36,8 +41,8 @@ public:
   bool isConnected();
   void movePiece();
   bool shouldRun();
-  void moveQueue(const int &cellX, const int &cellY, uint16_t z,
-                 const wxString &operation, const wxString &id);
+  void moveQueue(const int &cellX, const int &cellY, const wxString &operation,
+                 const wxString &id);
   void getDirection(int xCornerBR, int yCornerBR, int xCornerBL, int yCornerBL);
   void setDeadPiece(const int &cellX, const int &cellY, const wxString &id);
 };

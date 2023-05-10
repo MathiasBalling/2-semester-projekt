@@ -14,7 +14,7 @@ void AI::playTurn(Board *board) {
   // Choose the best move
   auto bestmove = bestMove(board);
 
-  // // Move the piece
+  //  Move the piece
   bestmove.second->move(bestmove.first->getCellX(), bestmove.first->getCellY(),
                         board);
   board->eraseAllIllumination();

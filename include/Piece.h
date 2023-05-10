@@ -25,6 +25,7 @@ public:
   int getValue();
   Piece *tempMovePiece(int toX, int toY, Board *board);
   void tempMoveUndo(int fromX, int fromY, Piece *piece, Board *board);
+  std::pair<int, int> getXYdead( Board *board);
 
 protected:
   int m_value;

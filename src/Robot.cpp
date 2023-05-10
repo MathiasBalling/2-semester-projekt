@@ -1,8 +1,9 @@
 // Header Files
 #include "Robot.h"
+#include "Board.h"
+#include <string>
 
-Robot::Robot() {
-  getDirection(-11, -412, 254, -306);
+Robot::Robot(Board *board) : m_board(board) {
 
   // Add the ip address of the modbus device
   m_mb = modbus_new_tcp("192.168.100.11", 502);
@@ -26,6 +27,8 @@ Robot::Robot() {
   m_controlWindow->SetSize(wxSize(w, h));
   m_controlWindow->SetPosition(wxPoint(0, 38));
   m_controlWindow->Show(true);
+
+  makeDialog();
 }
 
 Robot::~Robot() {
@@ -108,7 +111,7 @@ void Robot::movePiece() {
   // To stop the thread for a specific amount of time
   using namespace std::chrono_literals;
   using namespace std::this_thread;
-
+  uint8_t val = 0;
   modbus_connect(m_mb);
   while (m_connected) {
     if (shouldRun()) {
@@ -144,6 +147,8 @@ void Robot::movePiece() {
       setCO(1);      // Tells the UR5 continue
     } else {
       wxLogMessage("Nothing to move, the queue is empty");
+      modbus_write_register(m_mb, 22, val);
+      val = val == 0 ? 1 : 0;
       // If the queue is empty, wait 5 seconds and check again
       sleep_for(5s);
     }
@@ -160,17 +165,17 @@ bool Robot::shouldRun() {
   }
 }
 
-void Robot::moveQueue(const int &cellX, const int &cellY, uint16_t z,
+void Robot::moveQueue(const int &cellX, const int &cellY,
                       const wxString &operation, const wxString &id) {
   // Add piece position to queue
   m_piecePosQueue.push_back(cellX);
   m_piecePosQueue.push_back(cellY);
-  m_piecePosQueue.push_back(z);
+  m_piecePosQueue.push_back(m_zHeight);
 
   // Add piece position to queue window
 
   m_controlWindow->addItem(id, operation, getXY(cellX, cellY).first,
-                           getXY(cellX, cellY).second, z);
+                           getXY(cellX, cellY).second, m_zHeight);
 
   if (operation == "To Outside Board") {
     setDeadPiece(cellX, cellY, id);
@@ -184,10 +189,8 @@ void Robot::getDirection(int xCornerBR, int yCornerBR, int xCornerBL,
   m_yCorner = yCornerBR;
 
   // Calculate the difference between the corners
-  m_dX = (xCornerBR - xCornerBL) / 8;
-  m_dY = (yCornerBR - yCornerBL) / 8;
-  wxLogMessage("xCorner: %d yCorner: %d dX: %d dY: %d", m_xCorner, m_yCorner,
-               m_dX, m_dY);
+  m_dX = (xCornerBR - xCornerBL) / 7;
+  m_dY = (yCornerBR - yCornerBL) / 7;
 }
 void Robot::setDeadPiece(const int &cellX, const int &cellY,
                          const wxString &id) {
@@ -205,4 +208,101 @@ std::pair<int, int> Robot::getXY(const int &cellX, const int &cellY) {
   int xVal = m_xCorner - (cellX * m_dX) - (cellY * m_dY);
   int yVal = m_yCorner + (cellY * m_dX) - (cellX * m_dY);
   return std::make_pair(xVal, yVal);
+}
+
+void Robot::makeDialog() {
+  m_dialog = new wxDialog(m_controlWindow, wxID_ANY, "Settings");
+  wxCheckBox *aiCheckBox = new wxCheckBox(m_dialog, wxID_ANY, "AI");
+  aiCheckBox->SetValue(false);
+  aiCheckBox->Bind(wxEVT_CHECKBOX, [this](wxCommandEvent &event) {
+    m_board->setEnemyIsAI(event.IsChecked());
+  });
+  m_xCornerBR = 13;
+  m_yCornerBR = -398;
+  m_xCornerBL = 278;
+  m_yCornerBL = -289;
+  getDirection(m_xCornerBR, m_yCornerBR, m_xCornerBL, m_yCornerBL);
+  wxTextCtrl *cornerBR_X =
+      new wxTextCtrl(m_dialog, wxID_ANY, std::to_string(m_xCornerBR));
+  cornerBR_X->SetValidator(wxTextValidator(wxFILTER_NUMERIC));
+  cornerBR_X->Bind(wxEVT_TEXT, [this](wxCommandEvent &event) {
+    m_xCornerBR = wxAtoi(event.GetString());
+    getDirection(m_xCornerBR, m_yCornerBR, m_xCornerBL, m_yCornerBL);
+  });
+
+  wxTextCtrl *cornerBR_Y =
+      new wxTextCtrl(m_dialog, wxID_ANY, std::to_string(m_yCornerBR));
+  cornerBR_Y->SetValidator(wxTextValidator(wxFILTER_NUMERIC));
+  cornerBR_Y->Bind(wxEVT_TEXT, [this](wxCommandEvent &event) {
+    m_yCornerBR = wxAtoi(event.GetString());
+    getDirection(m_xCornerBR, m_yCornerBR, m_xCornerBL, m_yCornerBL);
+  });
+
+  wxTextCtrl *cornerBL_X =
+      new wxTextCtrl(m_dialog, wxID_ANY, std::to_string(m_xCornerBL));
+  cornerBL_X->SetValidator(wxTextValidator(wxFILTER_NUMERIC));
+  cornerBL_X->Bind(wxEVT_TEXT, [this](wxCommandEvent &event) {
+    m_xCornerBL = wxAtoi(event.GetString());
+    getDirection(m_xCornerBR, m_yCornerBR, m_xCornerBL, m_yCornerBL);
+  });
+
+  wxTextCtrl *cornerBL_Y =
+      new wxTextCtrl(m_dialog, wxID_ANY, std::to_string(m_yCornerBL));
+  cornerBL_Y->SetValidator(wxTextValidator(wxFILTER_NUMERIC));
+  cornerBL_Y->Bind(wxEVT_TEXT, [this](wxCommandEvent &event) {
+    m_yCornerBL = wxAtoi(event.GetString());
+    getDirection(m_xCornerBR, m_yCornerBR, m_xCornerBL, m_yCornerBL);
+  });
+
+  wxButton *okButton = new wxButton(m_dialog, wxID_OK, "OK");
+
+  wxTextCtrl *zHeight =
+      new wxTextCtrl(m_dialog, wxID_ANY, std::to_string(m_zHeight));
+  zHeight->SetValidator(wxTextValidator(wxFILTER_NUMERIC));
+  zHeight->Bind(wxEVT_TEXT, [this](wxCommandEvent &event) {
+    m_zHeight = wxAtoi(event.GetString());
+  });
+
+  wxBoxSizer *coordsizer1 = new wxBoxSizer(wxHORIZONTAL);
+  coordsizer1->AddSpacer(10);
+  coordsizer1->Add(
+      new wxStaticText(m_dialog, wxID_ANY, "Black bottom right: ("), 0,
+      wxALIGN_CENTER_VERTICAL);
+  coordsizer1->Add(cornerBR_X, 1, wxALIGN_CENTER_VERTICAL);
+  coordsizer1->Add(new wxStaticText(m_dialog, wxID_ANY, ","), 0,
+                   wxALIGN_CENTER_VERTICAL);
+  coordsizer1->Add(cornerBR_Y, 1, wxALIGN_CENTER_VERTICAL);
+  coordsizer1->Add(new wxStaticText(m_dialog, wxID_ANY, ")"), 0,
+                   wxALIGN_CENTER_VERTICAL);
+  coordsizer1->AddSpacer(10);
+
+  wxBoxSizer *coordsizer2 = new wxBoxSizer(wxHORIZONTAL);
+  coordsizer2->AddSpacer(10);
+  coordsizer2->Add(new wxStaticText(m_dialog, wxID_ANY, "Black bottom left: ("),
+                   0, wxALIGN_CENTER_VERTICAL);
+  coordsizer2->Add(cornerBL_X, 0, wxALIGN_CENTER_VERTICAL);
+  coordsizer2->Add(new wxStaticText(m_dialog, wxID_ANY, ","), 0,
+                   wxALIGN_CENTER_VERTICAL);
+  coordsizer2->Add(cornerBL_Y, 0, wxALIGN_CENTER_VERTICAL);
+  coordsizer2->Add(new wxStaticText(m_dialog, wxID_ANY, ")"), 0,
+                   wxALIGN_CENTER_VERTICAL);
+  coordsizer2->AddSpacer(10);
+
+  wxBoxSizer *coordsizer3 = new wxBoxSizer(wxHORIZONTAL);
+  coordsizer3->AddSpacer(10);
+  coordsizer3->Add(new wxStaticText(m_dialog, wxID_ANY, "Height of board: "), 0,
+                   wxALIGN_CENTER_VERTICAL);
+  coordsizer3->Add(zHeight, 0, wxALIGN_CENTER_VERTICAL);
+  coordsizer3->AddSpacer(10);
+
+  wxBoxSizer *mainSizer = new wxBoxSizer(wxVERTICAL);
+  mainSizer->Add(coordsizer1, 1, wxTOP, 10);
+  mainSizer->Add(coordsizer2, 1, wxTOP, 10);
+  mainSizer->Add(coordsizer3, 1, wxTOP, 10);
+  mainSizer->Add(aiCheckBox, 1, wxLEFT | wxRIGHT | wxTOP, 10);
+  mainSizer->AddSpacer(10);
+  mainSizer->Add(okButton, 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 10);
+  m_dialog->SetSizerAndFit(mainSizer);
+
+  m_dialog->Show(true);
 }
