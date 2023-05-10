@@ -76,6 +76,22 @@ void Piece::tempMoveUndo(int fromX, int fromY, Piece *deadPiece, Board *board) {
   }
 }
 
+std::pair<int, int> Piece::getXYdead(Board *board) {
+  if (m_color == "black") {
+    // Black dead pieces position outside the board
+    int i = board->getDeadPieces(m_color).size() - 1;
+    int x = -(i / 8 + 1);
+    int y = i % 8;
+    return std::make_pair(x, y);
+  } else {
+    // White dead pieces position outside the board
+    int i = board->getDeadPieces(m_color).size() - 1;
+    int x = i / 8 + 8;
+    int y = i % 8;
+    return std::make_pair(x, y);
+  }
+}
+
 void Piece::move(int targetX, int targetY, Board *board) {
   // Check if there's a piece in the target cell
   if (board->isTherePiece(targetX, targetY)) {
@@ -86,28 +102,29 @@ void Piece::move(int targetX, int targetY, Board *board) {
         std::string::npos)
       board->setGameFinished(true);
   }
-  uint16_t height = 200;
   // Check if there's a piece in the target cell
   if (board->isTherePiece(targetX, targetY)) {
     // Calculate the position outside the board
     Piece *deadPiece = board->getPieceAt(targetX, targetY);
     board->addDeadPiece(deadPiece, deadPiece->getColor());
-    std::pair<int, int> deadPiecePos;
     // Take the piece from the target cell
-    board->mb->moveQueue(targetX, targetY, height, "Take dead piece",
+    board->mb->moveQueue(targetX, targetY, "Take dead piece",
                          deadPiece->getId());
     // Then move to the position outside the board
-    board->mb->moveQueue(3, 9, height, "To Outside Board", deadPiece->getId());
+    auto deadMove = deadPiece->getXYdead(board);
+    std::cout << deadMove.first << " " << deadMove.second << std::endl;
+    board->mb->moveQueue(deadMove.first, deadMove.second, "To Outside Board",
+                         deadPiece->getId());
     // Get piece from initial cell
-    board->mb->moveQueue(m_cellX, m_cellY, height, "From", m_id);
+    board->mb->moveQueue(m_cellX, m_cellY, "From", m_id);
     // Then move to the target cell
-    board->mb->moveQueue(targetX, targetY, height, "To", m_id);
+    board->mb->moveQueue(targetX, targetY, "To", m_id);
   } else {
     // If there's no piece in the target cell, just take the piece from the
     // initial cell
-    board->mb->moveQueue(m_cellX, m_cellY, height, "From", m_id);
+    board->mb->moveQueue(m_cellX, m_cellY, "From", m_id);
     // Then move to the target cell
-    board->mb->moveQueue(targetX, targetY, height, "To", m_id);
+    board->mb->moveQueue(targetX, targetY, "To", m_id);
   }
   // Move piece on the board
   board->getCellAt(m_cellX, m_cellY)->setPiece(nullptr);
@@ -149,7 +166,6 @@ void Pawn::illuminatePaths(Board *board) {
        !(board->isTherePiece(m_cellX, 3)) &&
        !(board->isTherePiece(m_cellX, 2))))
     board->getCellAt(m_cellX, m_cellY - 2 * sign)->turnOn();
-
 }
 Rook::Rook(int cellX, int cellY, wxBitmap image, std::string id)
     : Piece(cellX, cellY, image, id) {}
@@ -183,7 +199,6 @@ void Rook::illuminatePaths(Board *board) {
 
   if (x < 8 && board->isThereEnemy(x, m_cellY))
     board->getCellAt(x, m_cellY)->turnOn();
-
 }
 
 Knight::Knight(int cellX, int cellY, wxBitmap image, std::string id)
@@ -199,7 +214,6 @@ void Knight::illuminatePaths(Board *board) {
       board->getCellAt(m_cellX + offset.first, m_cellY + offset.second)
           ->turnOn();
   }
-
 }
 
 Bishop::Bishop(int cellX, int cellY, wxBitmap image, std::string id)
@@ -238,8 +252,6 @@ void Bishop::illuminatePaths(Board *board) {
 
   if (x < 8 && y < 8 && board->isThereEnemy(x, y))
     board->getCellAt(x, y)->turnOn();
-
-
 }
 
 Queen::Queen(int cellX, int cellY, wxBitmap image, std::string id)
@@ -306,7 +318,6 @@ void Queen::illuminatePaths(Board *board) {
 
   if (x < 8 && board->isThereEnemy(x, m_cellY))
     board->getCellAt(x, m_cellY)->turnOn();
- 
 }
 
 King::King(int cellX, int cellY, wxBitmap image, std::string id)
@@ -322,5 +333,4 @@ void King::illuminatePaths(Board *board) {
       board->getCellAt(m_cellX + offset.first, m_cellY + offset.second)
           ->turnOn();
   }
- 
 }
