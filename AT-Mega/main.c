@@ -1,20 +1,23 @@
+#include <stdint.h>
 #define __AVR_ATmega644PA__
 #define F_CPU 8000000UL
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #include <util/delay.h>
 
-// #define F_CPU 8000000UL // Define the clock frequency of the AVR
-#define BAUD_RATE 4800 // Define the baud rate for UART communication
-#define UBRR_VAL ((F_CPU / (16 * BAUD_RATE)) - 1) // Calculate the UBRR value
+#define BAUD_RATE 9600 // Define the baud rate for UART communication
+// #define UBRR_VAL ((F_CPU / (16 * BAUD_RATE)) - 1) // Calculate the UBRR value
+#define UBRR_VAL 51
 
 #define PWM_PIN PD5 // Define the PWM output pin
 #define DIR_PIN PC2 // Define the direction pin
 #define LED_PIN PB1 // Define the LED pin
 
 void setup_adc() {
-  ADMUX = 0b01100000;
-  ADCSRA = 0b11101111;
+  ADMUX = (1 << REFS0) | (1 << ADLAR); // Set the reference voltage to AVCC
+  ADCSRA = (1 << ADEN) | (1 << ADIE) | (0 << ADSC) | (1 << ADPS2) |
+           (1 << ADPS1) |
+           (1 << ADPS0); // Enable ADC and set the prescaler to 128
 }
 double pwm = 1;
 void setup_pwm() {
@@ -79,22 +82,25 @@ void un_grip() {
   set_pwm();
 }
 
+void setup_uart() {
+  // Setup UART
+  UBRR1H =
+      (UBRR_VAL >> 8); // Set the UBRRH register with the high byte of the UBRR
+  // value
+  UBRR1L =
+      UBRR_VAL; // Set the UBRRL register with the low byte of the UBRR value
+  UCSR1B = (1 << TXEN1) | (1 << RXEN1) |
+           (1 << RXCIE1); // Enable RX and TX and RX interrupt in UCSRB register
+}
+
 int main(void) {
   setup_dir();
   setup_led();
   setup_pwm();
   setup_adc();
-
-  // Setup UART
-  UBRR0H = (UBRR_VAL >>
-            8); // Set the UBRRH register with the high byte of the UBRR value
-  UBRR0L =
-      UBRR_VAL; // Set the UBRRL register with the low byte of the UBRR value
-  UCSR0B = (1 << TXEN0) | (1 << RXEN0) |
-           (1 << RXCIE0); // Enable RX and TX and RX interrupt in UCSRB register
+  setup_uart();
 
   sei(); // Enable interrupts globally
-
   while (1) {
   }
 }
@@ -102,20 +108,36 @@ int main(void) {
 ////////////////// ISR Part //////////////////////
 
 // UART receive interrupt service routine
-ISR(USART0_RX_vect) {
-  static uint8_t
-      command_data; // Declare a static array to store the received bytes
-  if (command_data == 0) {
-    turn_off_led();
-  } else if (command_data == 1) {
-    turn_on_led();
+ISR(USART1_RX_vect) {
+  static uint8_t command_data;
+  while (!(UCSR1A & (1 << RXC1))) {
   }
-  // command_data = UDR0;
-  // UDR0 = command_data; // Send the received byte back to the PC
+  command_data = UDR1; // Declare a static array to store the received bytes
+  if (command_data) {
+    grip();
+    turn_on_led();
+  } else {
+    un_grip();
+    turn_off_led();
+  }
+  while (ADCSRA & (1 << ADSC)) {
+  }
+  static uint8_t adc_val;
+  adc_val = ADCH;
+  UDR1 = adc_val;
+  _delay_ms(1000);
+  stop_motor();
 }
+// static uint8_t command_data;
+// command_data = UDR1; // Declare a static array to store the received
+// bytes if (command_data == 0) {
+//   turn_off_led();
+// } else if (command_data == 1) {
+//   turn_on_led();
+// }
+// UDR1 = command_data; // Send the received byte back to the PC
 
 ISR(ADC_vect) {
-  unsigned char adc_val = ADCH;
+  // uint8_t adc_val = ADCH;
   // Start the next conversion
-  ADCSRA |= (1 << ADSC);
 }
