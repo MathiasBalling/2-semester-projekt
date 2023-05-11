@@ -13,6 +13,7 @@
 #include <wx/wx.h>
 
 // Modbus
+#include "serialib.h"
 #include <modbus.h>
 
 class Robot {
@@ -20,7 +21,7 @@ private:
   int m_xCorner, m_yCorner, m_xCornerBR, m_yCornerBR, m_xCornerBL, m_yCornerBL;
   int m_dX, m_dY;
   uint16_t m_zHeight = 200;
-  bool m_connected = false;
+  bool m_connected = true;
   std::vector<int> m_piecePosQueue;
   std::thread m_thread;
   modbus_t *m_mb;
@@ -28,6 +29,7 @@ private:
   wxDialog *m_dialog;
   Board *m_board;
   void makeDialog();
+  serialib m_serial;
 
 public:
   Robot(Board *board);

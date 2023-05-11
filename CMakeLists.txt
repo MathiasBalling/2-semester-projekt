@@ -29,9 +29,12 @@ message(STATUS "${wxWidgets_CXX_FLAGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${libmodbus_CFLAGS} ${wxWidgets_CXX_FLAGS}")
 
 include_directories(include)
-file(GLOB_RECURSE SRC_FILES 
+include_directories(external)
+file(GLOB SRC_FILES 
 src/*.cpp
 include/*.h
+external/*.cpp
+external/*.h
 )
 
 add_executable(${PROJECT_NAME} ${SRC_FILES})

@@ -7,13 +7,22 @@ Robot::Robot(Board *board) : m_board(board) {
 
   // Add the ip address of the modbus device
   m_mb = modbus_new_tcp("192.168.100.11", 502);
+  m_serial.openDevice("/dev/tty.usbserial-DK0AID5R", 4800);
 
   // Connect to the modbus device
   if (modbus_connect(m_mb) == -1) {
+    m_connected = false;
     wxLogMessage("Modbus: Connection Failed!");
-  } else {
+  }
+  if (!m_serial.isDeviceOpen()) {
+    m_connected = false;
+    wxLogMessage("Serial: Connection Failed!");
+  }
+  if (m_connected) {
     wxLogMessage("Modbus: Connection Successful!");
-    m_connected = true;
+    wxLogMessage("Serial: Connection Successful!");
+    uint8_t buffer[1] = {0};
+    m_serial.writeBytes(buffer, 1);
 
     // Start a worker thread to move pieces from the queue
     m_thread = std::thread(&Robot::movePiece, this);
@@ -112,6 +121,7 @@ void Robot::movePiece() {
   using namespace std::chrono_literals;
   using namespace std::this_thread;
   uint8_t val = 0;
+  bool grip = true;
   modbus_connect(m_mb);
   while (m_connected) {
     if (shouldRun()) {
@@ -133,7 +143,7 @@ void Robot::movePiece() {
       setXval(getXY(x, y).first);
       setYval(getXY(x, y).second);
       setZval(z);
-      sleep_for(100ms);
+      // sleep_for(100ms);
       setCO(1);            // Tells the UR5 to load the coordinates and move
       while (getDO() != 2) // Wait for UR5 to move
       {
@@ -143,17 +153,20 @@ void Robot::movePiece() {
           break;
         }
       }
-      sleep_for(3s); // Wait for grpper to close/open
-      setCO(1);      // Tells the UR5 continue
+      uint8_t buffer[1];
+      m_serial.readBytes(buffer, 1);
+      setCO(1); // Tells the UR5 continue
     } else {
       wxLogMessage("Nothing to move, the queue is empty");
-      modbus_write_register(m_mb, 22, val);
+      modbus_write_register(m_mb, 22,
+                            val); // Prevents the modbus from timing out
       val = val == 0 ? 1 : 0;
       // If the queue is empty, wait 5 seconds and check again
-      sleep_for(5s);
+      sleep_for(1s);
     }
   }
   modbus_close(m_mb);
+  m_serial.closeDevice();
 }
 
 bool Robot::shouldRun() {
