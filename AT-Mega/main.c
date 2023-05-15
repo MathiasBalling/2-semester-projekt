@@ -118,7 +118,7 @@ ISR(USART1_RX_vect) {
   if (command_data == 1) { // Grip
     grip();
     turn_on_led();
-    _delay_ms(300);
+    _delay_ms(200);
     do {
       ADCSRA |= (1 << ADSC);
       while (ADCSRA & (1 << ADSC)) {
@@ -130,7 +130,7 @@ ISR(USART1_RX_vect) {
   } else if (command_data == 0) { // Un-grip
     un_grip();
     turn_on_led();
-    _delay_ms(300);
+    _delay_ms(200);
     do {
       ADCSRA |= (1 << ADSC);
       while (ADCSRA & (1 << ADSC)) {
@@ -141,7 +141,7 @@ ISR(USART1_RX_vect) {
   } else if (command_data == 2) { // Ensure open gripper
     un_grip();
     turn_on_led();
-    _delay_ms(300);
+    _delay_ms(200);
     do {
       ADCSRA |= (1 << ADSC);
       while (ADCSRA & (1 << ADSC)) {
