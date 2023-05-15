@@ -2,6 +2,7 @@
 #include "Robot.h"
 #include "Board.h"
 #include <_types/_uint8_t.h>
+#include <chrono>
 #include <string>
 #include <thread>
 
@@ -123,7 +124,7 @@ void Robot::movePiece() {
   using namespace std::this_thread;
   uint8_t val = 0;
   bool grip = true;
-  // m_serial.flushReceiver();
+  m_serial.flushReceiver();
   modbus_connect(m_mb);
   while (m_connected) {
     if (shouldRun()) {
@@ -155,6 +156,9 @@ void Robot::movePiece() {
           break;
         }
       }
+      // Make chrono high_resolution_clock::now() - start_time
+      std::chrono::high_resolution_clock::time_point start_time =
+          std::chrono::high_resolution_clock::now();
       if (grip) {
         uint8_t gripcmd[1] = {1};
         m_serial.writeBytes(gripcmd, 1);
@@ -166,7 +170,10 @@ void Robot::movePiece() {
       }
       uint8_t buffer[1];
       m_serial.readBytes(buffer, 1, 0, 100000);
-      std::cout << "Buffer: " << (int)buffer[0] << std::endl;
+      std::chrono::high_resolution_clock::time_point end_time =
+          std::chrono::high_resolution_clock::now();
+      std::chrono::duration<double> time_span = end_time - start_time;
+      std::cout << "It took: " << time_span.count() << " seconds.";
       setCO(1); // Tells the UR5 continue
     } else {
       wxLogMessage("Nothing to move, the queue is empty");
