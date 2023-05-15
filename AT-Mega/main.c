@@ -63,22 +63,17 @@ void set_direction(int dir) {
 void stop_motor() { OCR1A = 0; }
 
 void set_pwm() {
-  // Set the PWM duty cycle to 50%
   OCR1A = ICR1;
 }
 
 void grip() {
   set_direction(1);
-  // Set the PWM duty cycle to 50%
-  // OCR1A = ICR1 / 2;
   set_pwm();
 }
 
 void un_grip() {
 
   set_direction(0);
-  // Set the PWM duty cycle to 50%
-  // OCR1A = ICR1 / 2;
   set_pwm();
 }
 
@@ -99,7 +94,6 @@ int main(void) {
   setup_pwm();
   setup_adc();
   setup_uart();
-  // UDR1 = UBRR_VAL2;
   sei(); // Enable interrupts globally
   while (1) {
   }
@@ -147,7 +141,6 @@ ISR(USART1_RX_vect) {
       while (ADCSRA & (1 << ADSC)) {
       }
       adc = ADCH;
-      //_delay_ms(1);
     } while (adc > min);
   } else if (command_data == 3) { // For mounting
     grip();
