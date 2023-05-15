@@ -1,7 +1,9 @@
 // Header Files
 #include "Robot.h"
 #include "Board.h"
+#include <_types/_uint8_t.h>
 #include <string>
+#include <thread>
 
 Robot::Robot(Board *board) : m_board(board) {
 
@@ -21,9 +23,8 @@ Robot::Robot(Board *board) : m_board(board) {
   if (m_connected) {
     wxLogMessage("Modbus: Connection Successful!");
     wxLogMessage("Serial: Connection Successful!");
-    uint8_t buffer[1] = {0};
+    uint8_t buffer[1] = {2};
     m_serial.writeBytes(buffer, 1);
-
     // Start a worker thread to move pieces from the queue
     m_thread = std::thread(&Robot::movePiece, this);
   }
@@ -122,6 +123,7 @@ void Robot::movePiece() {
   using namespace std::this_thread;
   uint8_t val = 0;
   bool grip = true;
+  // m_serial.flushReceiver();
   modbus_connect(m_mb);
   while (m_connected) {
     if (shouldRun()) {
@@ -143,25 +145,35 @@ void Robot::movePiece() {
       setXval(getXY(x, y).first);
       setYval(getXY(x, y).second);
       setZval(z);
-      // sleep_for(100ms);
+      sleep_for(100ms);
       setCO(1);            // Tells the UR5 to load the coordinates and move
       while (getDO() != 2) // Wait for UR5 to move
       {
-        sleep_for(200ms);
+        sleep_for(100ms);
         if (getDO() == -1) {
           wxLogMessage("Modbus: Error getting Digital Output");
           break;
         }
       }
+      if (grip) {
+        uint8_t gripcmd[1] = {1};
+        m_serial.writeBytes(gripcmd, 1);
+        grip = false;
+      } else {
+        uint8_t gripcmd[1] = {0};
+        m_serial.writeBytes(gripcmd, 1);
+        grip = true;
+      }
       uint8_t buffer[1];
-      m_serial.readBytes(buffer, 1);
+      m_serial.readBytes(buffer, 1, 0, 100000);
+      std::cout << "Buffer: " << (int)buffer[0] << std::endl;
       setCO(1); // Tells the UR5 continue
     } else {
       wxLogMessage("Nothing to move, the queue is empty");
       modbus_write_register(m_mb, 22,
                             val); // Prevents the modbus from timing out
       val = val == 0 ? 1 : 0;
-      // If the queue is empty, wait 5 seconds and check again
+      // If the queue is empty, wait 1 seconds and check again
       sleep_for(1s);
     }
   }

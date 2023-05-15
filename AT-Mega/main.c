@@ -111,9 +111,11 @@ int main(void) {
 ISR(USART1_RX_vect) {
   volatile static uint8_t command_data;
   volatile static int adc = 0x7f;
+  uint8_t min = 0x70;
+  uint8_t max = 0x90;
 
-  command_data = UDR1; // Declare a static array to store the received bytes
-  if (command_data == 1) {
+  command_data = UDR1;     // Declare a static array to store the received bytes
+  if (command_data == 1) { // Grip
     grip();
     turn_on_led();
     _delay_ms(300);
@@ -123,8 +125,20 @@ ISR(USART1_RX_vect) {
       }
       adc = ADCH;
       //_delay_ms(1);
-    } while (adc < 0x90); // GODT
-  } else if (command_data == 0) {
+    } while (adc < max);
+    UDR1 = adc;                   // Send the data to the TX buffer
+  } else if (command_data == 0) { // Un-grip
+    un_grip();
+    turn_on_led();
+    _delay_ms(300);
+    do {
+      ADCSRA |= (1 << ADSC);
+      while (ADCSRA & (1 << ADSC)) {
+      }
+      adc = ADCH;
+    } while (adc > min);
+    UDR1 = adc;                   // Send the data to the TX buffer
+  } else if (command_data == 2) { // Ensure open gripper
     un_grip();
     turn_on_led();
     _delay_ms(300);
@@ -134,9 +148,16 @@ ISR(USART1_RX_vect) {
       }
       adc = ADCH;
       //_delay_ms(1);
-    } while (adc > 0x70); // GODT
+    } while (adc > min);
+  } else if (command_data == 3) { // For mounting
+    grip();
+    turn_on_led();
+    _delay_ms(50);
+  } else if (command_data == 4) { // For mounting
+    un_grip();
+    turn_on_led();
+    _delay_ms(50);
   }
   stop_motor();
   turn_off_led();
-  UDR1 = adc; // Send the data to the TX buffer
 }

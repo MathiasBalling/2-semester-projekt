@@ -20,7 +20,7 @@ class Robot {
 private:
   int m_xCorner, m_yCorner, m_xCornerBR, m_yCornerBR, m_xCornerBL, m_yCornerBL;
   int m_dX, m_dY;
-  uint16_t m_zHeight = 200;
+  uint16_t m_zHeight = 150;
   bool m_connected = true;
   std::vector<int> m_piecePosQueue;
   std::thread m_thread;
