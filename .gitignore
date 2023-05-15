@@ -2,3 +2,5 @@
 .DS_Store
 /build/**
 .cache
+AT-Mega/main.hex
+AT-Mega/main.bin
