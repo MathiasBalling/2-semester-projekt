@@ -62,9 +62,7 @@ void set_direction(int dir) {
 
 void stop_motor() { OCR1A = 0; }
 
-void set_pwm() {
-  OCR1A = ICR1;
-}
+void set_pwm() { OCR1A = ICR1; }
 
 void grip() {
   set_direction(1);
@@ -103,28 +101,29 @@ int main(void) {
 
 // UART receive interrupt service routine
 ISR(USART1_RX_vect) {
-  volatile static uint8_t command_data;
+  volatile static uint8_t
+      command_data; // Declare a static array to store the received bytes
   volatile static int adc = 0x7f;
   uint8_t min = 0x70;
   uint8_t max = 0x90;
+  uint8_t delay = 200;
 
-  command_data = UDR1;     // Declare a static array to store the received bytes
+  command_data = UDR1;
   if (command_data == 1) { // Grip
     grip();
     turn_on_led();
-    _delay_ms(200);
+    _delay_ms(delay);
     do {
       ADCSRA |= (1 << ADSC);
       while (ADCSRA & (1 << ADSC)) {
       }
       adc = ADCH;
-      //_delay_ms(1);
     } while (adc < max);
     UDR1 = adc;                   // Send the data to the TX buffer
   } else if (command_data == 0) { // Un-grip
     un_grip();
     turn_on_led();
-    _delay_ms(200);
+    _delay_ms(delay);
     do {
       ADCSRA |= (1 << ADSC);
       while (ADCSRA & (1 << ADSC)) {
@@ -135,7 +134,7 @@ ISR(USART1_RX_vect) {
   } else if (command_data == 2) { // Ensure open gripper
     un_grip();
     turn_on_led();
-    _delay_ms(200);
+    _delay_ms(delay);
     do {
       ADCSRA |= (1 << ADSC);
       while (ADCSRA & (1 << ADSC)) {

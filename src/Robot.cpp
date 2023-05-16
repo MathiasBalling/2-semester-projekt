@@ -26,6 +26,7 @@ Robot::Robot(Board *board) : m_board(board) {
     wxLogMessage("Serial: Connection Successful!");
     uint8_t buffer[1] = {2};
     m_serial.writeBytes(buffer, 1);
+    m_serial.flushReceiver();
     // Start a worker thread to move pieces from the queue
     m_thread = std::thread(&Robot::movePiece, this);
   }
@@ -63,7 +64,6 @@ void Robot::setXval(int val) {
   if (msg == -1) {
     wxLogMessage("Modbus: Counldn't set x!");
   }
-  modbus_close(m_mb);
 }
 
 void Robot::setYval(int val) {
@@ -76,7 +76,6 @@ void Robot::setYval(int val) {
   if (msg == -1) {
     wxLogMessage("Modbus: Counldn't set y!");
   }
-  modbus_close(m_mb);
 }
 
 void Robot::setZval(int val) {
@@ -89,7 +88,6 @@ void Robot::setZval(int val) {
   if (msg == -1) {
     wxLogMessage("Modbus: Counldn't set z!");
   }
-  modbus_close(m_mb);
 }
 
 void Robot::setCO(uint16_t val) {
@@ -99,7 +97,6 @@ void Robot::setCO(uint16_t val) {
   if (msg == -1) {
     wxLogMessage("Modbus: Counldn't set Digital Output!");
   }
-  modbus_close(m_mb);
 }
 
 int Robot::getDO() {
@@ -113,7 +110,6 @@ int Robot::getDO() {
   } else {
     return val;
   }
-  modbus_close(m_mb);
 }
 
 bool Robot::isConnected() { return m_connected; }
@@ -173,10 +169,9 @@ void Robot::movePiece() {
       std::chrono::high_resolution_clock::time_point end_time =
           std::chrono::high_resolution_clock::now();
       std::chrono::duration<double> time_span = end_time - start_time;
-      std::cout << "It took: " << time_span.count() << " seconds.";
+      wxLogMessage("Gripping took: %f seconds", time_span.count());
       setCO(1); // Tells the UR5 continue
     } else {
-      wxLogMessage("Nothing to move, the queue is empty");
       modbus_write_register(m_mb, 22,
                             val); // Prevents the modbus from timing out
       val = val == 0 ? 1 : 0;
