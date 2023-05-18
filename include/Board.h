@@ -52,3 +52,5 @@ private:
   std::vector<Piece *> m_deadBlackPieces;
   int boardRealWorldHeight = 200;
 };
+// 0 -500
+//254 -480

@@ -38,7 +38,7 @@ public:
   void setXval(int val);
   void setYval(int val);
   void setZval(int val);
-  void setCO(uint16_t val);
+  void setCO();
   int getDO();
   bool isConnected();
   void movePiece();

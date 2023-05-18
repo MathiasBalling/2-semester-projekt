@@ -1,6 +1,7 @@
 // Header Files
 #include "Robot.h"
 #include "Board.h"
+#include "modbus.h"
 #include <_types/_uint8_t.h>
 #include <chrono>
 #include <string>
@@ -64,6 +65,7 @@ void Robot::setXval(int val) {
   if (msg == -1) {
     wxLogMessage("Modbus: Counldn't set x!");
   }
+  modbus_close(m_mb);
 }
 
 void Robot::setYval(int val) {
@@ -76,6 +78,7 @@ void Robot::setYval(int val) {
   if (msg == -1) {
     wxLogMessage("Modbus: Counldn't set y!");
   }
+  modbus_close(m_mb);
 }
 
 void Robot::setZval(int val) {
@@ -88,15 +91,17 @@ void Robot::setZval(int val) {
   if (msg == -1) {
     wxLogMessage("Modbus: Counldn't set z!");
   }
+  modbus_close(m_mb);
 }
 
-void Robot::setCO(uint16_t val) {
+void Robot::setCO() {
   modbus_connect(m_mb);
   // Write the configurable output to the modbus device
-  int msg = modbus_write_register(m_mb, 31, val);
+  int msg = modbus_write_register(m_mb, 31, 1);
   if (msg == -1) {
     wxLogMessage("Modbus: Counldn't set Digital Output!");
   }
+  modbus_close(m_mb);
 }
 
 int Robot::getDO() {
@@ -106,8 +111,10 @@ int Robot::getDO() {
   int msg = modbus_read_registers(m_mb, 1, 1, &val);
   if (msg == -1) {
     wxLogMessage("Modbus: Counldn't get Digital Output!");
+    modbus_close(m_mb);
     return -1;
   } else {
+    modbus_close(m_mb);
     return val;
   }
 }
@@ -120,6 +127,7 @@ void Robot::movePiece() {
   using namespace std::this_thread;
   uint8_t val = 0;
   bool grip = true;
+  m_serial.openDevice("/dev/tty.usbserial-DK0AID5R", 4800);
   m_serial.flushReceiver();
   modbus_connect(m_mb);
   while (m_connected) {
@@ -143,7 +151,7 @@ void Robot::movePiece() {
       setYval(getXY(x, y).second);
       setZval(z);
       sleep_for(100ms);
-      setCO(1);            // Tells the UR5 to load the coordinates and move
+      setCO();             // Tells the UR5 to load the coordinates and move
       while (getDO() != 2) // Wait for UR5 to move
       {
         sleep_for(100ms);
@@ -152,9 +160,9 @@ void Robot::movePiece() {
           break;
         }
       }
-      // Make chrono high_resolution_clock::now() - start_time
-      std::chrono::high_resolution_clock::time_point start_time =
-          std::chrono::high_resolution_clock::now();
+      // // Make chrono high_resolution_clock::now() - start_time
+      // std::chrono::high_resolution_clock::time_point start_time =
+      //     std::chrono::high_resolution_clock::now();
       if (grip) {
         uint8_t gripcmd[1] = {1};
         m_serial.writeBytes(gripcmd, 1);
@@ -166,11 +174,11 @@ void Robot::movePiece() {
       }
       uint8_t buffer[1];
       m_serial.readBytes(buffer, 1, 0, 100000);
-      std::chrono::high_resolution_clock::time_point end_time =
-          std::chrono::high_resolution_clock::now();
-      std::chrono::duration<double> time_span = end_time - start_time;
-      wxLogMessage("Gripping took: %f seconds", time_span.count());
-      setCO(1); // Tells the UR5 continue
+      // std::chrono::high_resolution_clock::time_point end_time =
+      //     std::chrono::high_resolution_clock::now();
+      // std::chrono::duration<double> time_span = end_time - start_time;
+      // wxLogMessage("Gripping took: %f seconds", time_span.count());
+      setCO(); // Tells the UR5 continue
     } else {
       modbus_write_register(m_mb, 22,
                             val); // Prevents the modbus from timing out
@@ -244,10 +252,10 @@ void Robot::makeDialog() {
   aiCheckBox->Bind(wxEVT_CHECKBOX, [this](wxCommandEvent &event) {
     m_board->setEnemyIsAI(event.IsChecked());
   });
-  m_xCornerBR = 13;
-  m_yCornerBR = -398;
-  m_xCornerBL = 278;
-  m_yCornerBL = -289;
+  m_xCornerBR = 0;
+  m_yCornerBR = -500;
+  m_xCornerBL = 254;
+  m_yCornerBL = -480;
   getDirection(m_xCornerBR, m_yCornerBR, m_xCornerBL, m_yCornerBL);
   wxTextCtrl *cornerBR_X =
       new wxTextCtrl(m_dialog, wxID_ANY, std::to_string(m_xCornerBR));

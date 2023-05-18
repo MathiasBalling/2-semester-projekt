@@ -77,17 +77,29 @@ void Piece::tempMoveUndo(int fromX, int fromY, Piece *deadPiece, Board *board) {
 }
 
 std::pair<int, int> Piece::getXYdead(Board *board) {
+  int x, y;
   if (m_color == "black") {
     // Black dead pieces position outside the board
     int i = board->getDeadPieces(m_color).size() - 1;
-    int x = -(i / 8 + 1);
-    int y = i % 8;
+    if (i < 9) {
+      x = -1;
+      y = i % 8;
+    } else {
+      y = -1;
+      x = i % 8;
+    }
+
     return std::make_pair(x, y);
   } else {
     // White dead pieces position outside the board
     int i = board->getDeadPieces(m_color).size() - 1;
-    int x = i / 8 + 8;
-    int y = i % 8;
+    if (i < 9) {
+      x = 8;
+      y = i % 8;
+    } else {
+      y = 8;
+      x = i % 8;
+    }
     return std::make_pair(x, y);
   }
 }
