@@ -81,7 +81,7 @@ std::pair<int, int> Piece::getXYdead(Board *board) {
   if (m_color == "black") {
     // Black dead pieces position outside the board
     int i = board->getDeadPieces(m_color).size() - 1;
-    if (i < 9) {
+    if (i < 8) {
       x = -1;
       y = i % 8;
     } else {
@@ -93,7 +93,7 @@ std::pair<int, int> Piece::getXYdead(Board *board) {
   } else {
     // White dead pieces position outside the board
     int i = board->getDeadPieces(m_color).size() - 1;
-    if (i < 9) {
+    if (i < 8) {
       x = 8;
       y = i % 8;
     } else {

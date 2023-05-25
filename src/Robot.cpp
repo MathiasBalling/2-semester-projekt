@@ -254,8 +254,8 @@ void Robot::makeDialog() {
   });
   m_xCornerBR = 0;
   m_yCornerBR = -500;
-  m_xCornerBL = 254;
-  m_yCornerBL = -480;
+  m_xCornerBL = 203;
+  m_yCornerBL = -343;
   getDirection(m_xCornerBR, m_yCornerBR, m_xCornerBL, m_yCornerBL);
   wxTextCtrl *cornerBR_X =
       new wxTextCtrl(m_dialog, wxID_ANY, std::to_string(m_xCornerBR));
