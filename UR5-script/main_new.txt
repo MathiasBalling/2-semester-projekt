@@ -1,0 +1,31 @@
+ Program
+   BeforeStart
+     Set DO[1]=Off
+     Set CO[0]=Off
+     MoveJ
+       Waypoint_1
+   Robot Program
+     Wait config_out[0]≟ True 
+     Set CO[0]=Off
+     If read_port_register(128)/1000≤2
+       Piece_x≔read_port_register(128)/1000
+     Else
+       Piece_x≔read_port_register(128)/-1000+2
+     If read_port_register(129)/1000≤2
+       Piece_y≔read_port_register(129)/1000
+     Else
+       Piece_y≔read_port_register(129)/-1000+2
+     If read_port_register(130)/1000≤2
+       Piece_z≔read_port_register(130)/1000
+     Else
+       Piece_z≔read_port_register(130)/-1000+2
+     Take_Piece≔p[Piece_x,Piece_y,Piece_z,3.154,0.232,0]
+     Over_Piece≔p[Piece_x,Piece_y,Piece_z+0.05,3.154,0.232,0]
+     MoveL
+       Over_Piece
+       Take_Piece
+       Set DO[1]=On
+       Wait config_out[0]≟ True 
+       Set CO[0]=Off
+       Set DO[1]=Off
+       Over_Piece

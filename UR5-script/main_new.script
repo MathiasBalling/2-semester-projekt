@@ -1,0 +1,100 @@
+def main_new():
+  set_tool_voltage(0)
+  set_gravity([0.0, 0.0, 9.82])
+  set_safety_mode_transition_hardness(1)
+  modbus_add_signal("192.168.100.10", 255, 0, 1, "Gripper_command", False)
+  modbus_set_signal_update_frequency("Gripper_command", 10)
+  modbus_add_signal("192.168.100.10", 255, 1, 1, "Gripper_perm", False)
+  modbus_set_signal_update_frequency("Gripper_perm", 10)
+  modbus_add_signal("192.168.100.10", 255, 0, 0, "Gripper_status", False)
+  modbus_set_signal_update_frequency("Gripper_status", 10)
+  modbus_set_runstate_dependent_choice("Gripper_command",0)
+  modbus_set_runstate_dependent_choice("Gripper_perm",0)
+  step_count_8854dc85_fd7d_46b3_8fee_d20b57f14e15 = 0.0
+  thread Step_Counter_Thread_a8231371_edfb_4c44_a799_01eb497474be():
+    while (True):
+      step_count_8854dc85_fd7d_46b3_8fee_d20b57f14e15 = step_count_8854dc85_fd7d_46b3_8fee_d20b57f14e15 + 1.0
+      sync()
+    end
+  end
+  run Step_Counter_Thread_a8231371_edfb_4c44_a799_01eb497474be()
+  set_tcp(p[0.0,0.0,0.0,0.0,0.0,0.0])
+  set_payload(0.5)
+  set_standard_analog_input_domain(0, 1)
+  set_standard_analog_input_domain(1, 1)
+  set_tool_analog_input_domain(0, 1)
+  set_tool_analog_input_domain(1, 1)
+  set_analog_outputdomain(0, 0)
+  set_analog_outputdomain(1, 0)
+  set_input_actions_to_default()
+  # begin: URCap Installation Node
+  #   Source: weiss_simple, 1.0.0, University of Southern Denmark
+  #   Type: SDU Simple Weiss Gripper
+  weiss_daemon = rpc_factory("xmlrpc", "http://127.0.0.1:40405/RPC2")
+  # end: URCap Installation Node
+  $ 1 "BeforeStart"
+  $ 2 "Set DO[1]=Off"
+  set_standard_digital_out(1, False)
+  $ 3 "Set CO[0]=Off"
+  set_configurable_digital_out(0, False)
+  $ 4 "MoveJ"
+  $ 5 "Waypoint_1" "breakAfter"
+  movej(get_inverse_kin(p[.000000000000, -.500000000000, .200000000000, -3.112255794943, -.228929405335, -.000000000000], qnear=[-1.3485236816434014, -1.7427331490184734, -2.010671273075541, -0.9801811269348955, 1.5838099216094825, -3.0631455966675176]), a=1.3962634015954636, v=1.0471975511965976)
+  while (True):
+    $ 6 "Robot Program"
+    $ 7 "Wait config_out[0]≟ True "
+    while (not(get_configurable_digital_out(0) ==   True  )):
+      sync()
+    end
+    $ 8 "Set CO[0]=Off"
+    set_configurable_digital_out(0, False)
+    $ 9 "If read_port_register(128)/1000≤2"
+    if (read_port_register(128)/1000 <= 2):
+      $ 10 "Piece_x≔read_port_register(128)/1000"
+      global Piece_x=read_port_register(128)/1000
+    else:
+      $ 11 "Else" "noBreak"
+      $ 12 "Piece_x≔read_port_register(128)/-1000+2"
+      global Piece_x=read_port_register(128)/-1000+2
+    end
+    $ 13 "If read_port_register(129)/1000≤2"
+    if (read_port_register(129)/1000 <= 2):
+      $ 14 "Piece_y≔read_port_register(129)/1000"
+      global Piece_y=read_port_register(129)/1000
+    else:
+      $ 15 "Else" "noBreak"
+      $ 16 "Piece_y≔read_port_register(129)/-1000+2"
+      global Piece_y=read_port_register(129)/-1000+2
+    end
+    $ 17 "If read_port_register(130)/1000≤2"
+    if (read_port_register(130)/1000 <= 2):
+      $ 18 "Piece_z≔read_port_register(130)/1000"
+      global Piece_z=read_port_register(130)/1000
+    else:
+      $ 19 "Else" "noBreak"
+      $ 20 "Piece_z≔read_port_register(130)/-1000+2"
+      global Piece_z=read_port_register(130)/-1000+2
+    end
+    $ 21 "Take_Piece≔p[Piece_x,Piece_y,Piece_z,3.154,0.232,0]"
+    global Take_Piece=p[Piece_x,Piece_y,Piece_z,3.154,0.232,0]
+    $ 22 "Over_Piece≔p[Piece_x,Piece_y,Piece_z+0.05,3.154,0.232,0]"
+    global Over_Piece=p[Piece_x,Piece_y,Piece_z+0.05,3.154,0.232,0]
+    $ 23 "MoveL"
+    $ 24 "Over_Piece" "breakAfter"
+    movel(pose_trans(p[0.0,0.0,0.0,0.0,0.0,0.0], Over_Piece), a=1.2, v=0.25)
+    $ 25 "Take_Piece" "breakAfter"
+    movel(pose_trans(p[0.0,0.0,0.0,0.0,0.0,0.0], Take_Piece), a=1.2, v=0.25)
+    $ 26 "Set DO[1]=On"
+    set_standard_digital_out(1, True)
+    $ 27 "Wait config_out[0]≟ True "
+    while (not(get_configurable_digital_out(0) ==   True  )):
+      sync()
+    end
+    $ 28 "Set CO[0]=Off"
+    set_configurable_digital_out(0, False)
+    $ 29 "Set DO[1]=Off"
+    set_standard_digital_out(1, False)
+    $ 30 "Over_Piece" "breakAfter"
+    movel(pose_trans(p[0.0,0.0,0.0,0.0,0.0,0.0], Over_Piece), a=1.2, v=0.25)
+  end
+end
